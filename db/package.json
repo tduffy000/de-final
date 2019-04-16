@@ -1,0 +1,12 @@
+{
+  "name": "Database",
+  "version": "0.0.1",
+  "description": "Database for DE Final Project",
+  "main": "index.js",
+  "repository": "https://github.com/tduffy000/de-final",
+  "author": "Carlos Martinez, Divya Sankar, Thomas Duffy",
+  "license": "MIT",
+  "dependencies": {
+    "sequelize": "^5.6.0"
+  }
+}
