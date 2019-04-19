@@ -1,2 +1,5 @@
 # nodeJS package files
 node_modules
+
+# yarn logs
+yarn-error.log
