@@ -20,6 +20,7 @@ const typeDefs = gql`
     students: [Student]
     faculty: [Faculty]
     currentUser: User
+    courses: [Course]
   }
 
   type Mutation {
@@ -127,7 +128,6 @@ var users = new Users();
 var userSessions = new UserSessions();
 var courses = new Courses();
 
-// TODO: consider refactoring/splitting these to separate files
 const resolvers = {
   User: {
     __resolveType(obj, context, info) {
@@ -144,7 +144,8 @@ const resolvers = {
   Query: {
     users: (root, args, context) => users.getUsers(),
     students: (root, args, context, info) => users.getStudents(),
-    faculty: (root, args, context, info) => users.getFaculty()
+    faculty: (root, args, context, info) => users.getFaculty(),
+    courses: (root, args, context, info) => courses.getCourses()
   },
   Mutation: {
     createUser: (root, { user }, context) => {
@@ -152,6 +153,14 @@ const resolvers = {
     },
     updateUser: (root, id, { user }, context) => {
       users.update(id, { user })
+    },
+    createCourse: (root, args, context) => {
+      let faculty = users.getFaculty()
+      let prof = faculty.find( f => f.id == args.facultyID )
+      courses.create( args.name, prof )
+    },
+    deleteCourse: (root, args, context) => {
+      courses.delete( args.courseID )
     }
   }
 };

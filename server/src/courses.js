@@ -1,14 +1,3 @@
-/*
- * NEED TESTING:
- * - getter methods
- * - create course
- * - update course attributes
- * - delete a course
- * - add a student to a course
- * - remove a student from a course
- * COMPLETED TESTING:
- *
-*/
 export default class Courses {
 
   constructor() {
@@ -20,46 +9,51 @@ export default class Courses {
     return this.courses;
   }
 
+  // TODO: re-do b/c we're deleting courses
   get( id ) {
-    return this.courses[id];
+    return this.courses[id - 1];
   }
 
-  create( args ) {
+  create( name, professor ) {
     const course = {
-                      id: this.nextID++, name: args.name,
-                      professor: args.professor, students: [],
+                      id: this.nextID++,
+                      name: name,
+                      professor: professor,
+                      students: [],
                       assignments: []
                     }
 
-    // check if course is already defined (i.e. another has same name)
-    let isNameUnique = this.courses.reduce(
+    let isNameUnique = !this.courses.reduce(
       (acc, c) => acc || c.name === course.name,
       false
     );
     if (isNameUnique) {
       this.courses.push( course );
+      professor.courses.push( course );
       return course;
     }
     return null;
   }
 
   update( id, changes ) {
-    const course = this.get({id});
+    const course = this.get(id);
     changes.map(
-      // match on key then update value
+      // TODO: match on key then update value
     )
   }
 
   delete( id ) {
-    let course = this.courses.find( c => c.id === id );
+    let course = this.get(id);
     if ( course ) {
 
       // remove the course from all its enrolled students
-      course.students.map(
-        s => s.courses = s.courses.filter(
-          c => c.id !== course.id
+      if (course.students) {
+        course.students.map(
+          s => s.courses = s.courses.filter(
+            c => c.id !== course.id
+          )
         )
-      );
+      };
 
       // remove the course from its professor
       course.professor.courses = course.professor.courses.filter(
@@ -69,7 +63,7 @@ export default class Courses {
       // remove it from the course store
       this.courses = this.courses.filter( c => c.id !== course.id );
 
-      return c;
+      return course;
     }
   }
 

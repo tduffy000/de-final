@@ -17,13 +17,17 @@ export default class Users {
         id: 1,
         name: "one",
         email: "one@example.com",
-        role: "Student"
+        role: "Student",
+        courses: [],
+        assignments: [],
+        gpa: null
       },
       {
         id: 2,
         name: "prof",
         email: "admin@example.com",
-        role: "Faculty"
+        role: "Faculty",
+        courses: []
       }
     ];
   };
@@ -55,15 +59,28 @@ export default class Users {
   // TODO: this needs to change b/c we can now delete users
   // unless we mark for deletion without removing
   get(id) {
-    return this.users[id];
+    return this.users[id - 1];
   }
 
   create({ user }) {
-    const u = { id: this.nextID++,
-                name: user.name,
-                email: user.email,
-                role: user.role };
-
+    const base = {
+                  id: this.nextID++,
+                  name: user.name,
+                  email: user.email,
+                  role: user.role
+                };
+    // append role specific attributes
+    switch ( user.role ) {
+      case "Student":
+        var u = {...base, courses: [], assignments: [], gpa: null};
+        break;
+      case "Faculty":
+        var u = {...base, courses: []};
+        break;
+      default:
+        var u = {...base};
+        break;
+    };
     this.users.push(u);
     return u;
   }
