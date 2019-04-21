@@ -5,7 +5,7 @@ export default class Users {
 
   constructor() {
     this.nextID = 3;
-    // dummy users for testing
+    // dummy users for testing (Remove for production)
     this.users = [
       {
         id: 0,
@@ -57,18 +57,22 @@ export default class Users {
   }
 
   // TODO: this needs to change b/c we can now delete users
+  // i.e. users should be {id : {..values}}
   // unless we mark for deletion without removing
   get(id) {
     return this.users[id - 1];
   }
 
+  // TODO: the id's should be the keys for faster lookup
+  // {id : {...values}}
+  // @see https://stackoverflow.com/questions/1144705/best-way-to-store-a-key-value-array-in-javascript
   create({ user }) {
     const base = {
-                  id: this.nextID++,
-                  name: user.name,
-                  email: user.email,
-                  role: user.role
-                };
+                    id: this.nextID++,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                  };
     // append role specific attributes
     switch ( user.role ) {
       case "Student":
@@ -87,6 +91,7 @@ export default class Users {
 
   update({ id, user }) {
     const u = this.get( id );
+    if (!u) throw "Could not find user with id = " + id;
     u.name = user.name;
     u.email = user.email;
     return u;
@@ -95,11 +100,10 @@ export default class Users {
   // TODO: deleting by id messes us get() which uses id as index on this.users
   delete(id) {
     let u = this.users.find( u => u.id === id );
-    if (u) {
-      this.users = this.users.filter(
-        user => user.id !== u.id
-      );
+    if (!u) throw "Could not find user with id = " + id;
+    this.users = this.users.filter(
+      user => user.id !== u.id
+    );
       return u
-    }
   }
 }

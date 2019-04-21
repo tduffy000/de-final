@@ -12,6 +12,8 @@ import Courses from "./courses.js";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
+// @see https://stackoverflow.com/questions/1144705/best-way-to-store-a-key-value-array-in-javascript
+
 // Construct a schema, using GraphQL schema language
 // TODO: consider that the database should handle the ID's to maintain uniqueness
 const typeDefs = gql`
@@ -34,8 +36,8 @@ const typeDefs = gql`
     # Only Faculty can create/update and manage courses
     createCourse(name: String!, facultyID: ID!): Course
     deleteCourse(courseID: ID!): Course
-    addCourseStudent(courseID: ID!, studentID: ID!): Course
-    deleteCourseStudent(courseID: ID!, studentID: ID!): Course
+    addStudentToCourse(courseID: ID!, studentID: ID!): Course
+    removeStudentFromCourse(courseID: ID!, studentID: ID!): Course
 
     createAssignment(courseID: ID!, name: String!): Assignment
     createAssignmentGrade(
@@ -129,6 +131,7 @@ var userSessions = new UserSessions();
 var courses = new Courses();
 
 const resolvers = {
+  // can't you just use __resolveType => obj.role ?
   User: {
     __resolveType(obj, context, info) {
       switch ( obj.role ) {
@@ -161,6 +164,16 @@ const resolvers = {
     },
     deleteCourse: (root, args, context) => {
       courses.delete( args.courseID )
+    },
+    addStudentToCourse: (roots, args, context) => {
+      let students = users.getStudents()
+      let student = students.find( s => s.id == args.studentID )
+      courses.addStudent( args.courseID, student )
+    },
+    removeStudentFromCourse: (roots, args, context) => {
+      let students = users.getStudents()
+      let student = students.find( s => s.id == args.studentID )
+      courses.removeStudent( args.courseID, student )
     }
   }
 };
