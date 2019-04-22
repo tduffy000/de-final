@@ -1,4 +1,4 @@
-// import crypto from "crypto";
+import crypto from "crypto";
 import AuthenticationError from "apollo-server";
 
 export default class Users {
@@ -51,7 +51,7 @@ export default class Users {
   getStudent(id) {
     const students = this.getStudents();
     let student = students.find( s => s.id == id );
-    if (!student) throw "There is no student with id = " + id;
+    if (!student) throw new ReferenceError("There is no student with id = " + id);
     return student;
   }
 
@@ -62,13 +62,64 @@ export default class Users {
   getProfessor(id) {
     const faculty = this.getFaculty();
     let prof = faculty.find( f => f.id == id );
-    if (!prof) throw "There is no faculty member with id = " + id;
+    if (!prof) throw new ReferenceError("There is no faculty member with id = " + id);
     return prof;
   }
 
   getStudentByEmail(email) {
     return this.getStudents().filter(s => s.email === email)[0] || null;
   }
+
+  /**
+  * See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
+  * generates random string of characters i.e salt
+  * @function
+  * @param {number} length - Length of the random string.
+  */
+  genRandomString = length => {
+   return crypto
+     .randomBytes(Math.ceil(length / 2))
+     .toString('hex') /** convert to hexadecimal format */
+     .slice(0, length); /** return required number of characters */
+  };
+
+  sha512 = (password, salt) => {
+   var hash = crypto.createHmac(
+     'sha512',
+     salt,
+   ); /** Hashing algorithm sha512 */
+   hash.update(password);
+   var value = hash.digest('hex');
+   return {
+     salt: salt,
+     passwordHash: value,
+   };
+  };
+
+  login(emailAddress, password) {
+   // does a user with the specified emailAddress exist?
+   const id = this.users.find(({ email }) => email === emailAddress);
+   if(!id) {
+     throw new AuthenticationError("User with id = " + id + "not Found");
+   }
+   const user = this.users.get(id);
+
+   // hash the password with the user salt
+   const hashedPassword = this.sha512(password, user.salt).passwordHash;
+
+   // compare the hashed password against the one in the user record
+   if (hashedPassword !== user.passwordHash) {
+     console.log(hashedPassword);
+     console.log(user);
+     throw new AuthenticationError("Bad Login or Password");
+   }
+
+   // create a jwt token and store
+   return {
+     user: _.omit(user, ['passwordHash', 'salt']),
+     token: userSessions.createSession(user.id, APP_SECRET),
+   };
+  };
 
   list() {
     return this.users;
@@ -99,7 +150,7 @@ export default class Users {
 
   update({ id, user }) {
     const u = this.get( id );
-    if (!u) throw "Could not find user with id = " + id;
+    if (!u) throw new ReferenceError("Could not find user with id = " + id);
     u.name = user.name;
     u.email = user.email;
     return u;
@@ -107,7 +158,7 @@ export default class Users {
 
   delete(id) {
     let u = this.users.get(id);
-    if (!u) throw "Could not find user with id = " + id;
+    if (!u) throw new ReferenceError("Could not find user with id = " + id);
     this.users = this.users.filter(
       user => user.id !== u.id
     );

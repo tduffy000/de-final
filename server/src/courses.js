@@ -14,12 +14,12 @@ export default class Courses {
   }
 
   create( name, professor ) {
-    if (!professor) throw "Professor field not defined!";
+    if (!professor) throw new TypeError("Professor field not defined!");
     let isNameUnique = !this.courses.reduce(
       (acc, c) => acc || c.name === name,
       false
     );
-    if (!isNameUnique) throw course.name + " is already being used";
+    if (!isNameUnique) throw new ReferenceError(course.name + " is already being used");
 
     const course = {
                       id: this.nextID++,
@@ -44,7 +44,7 @@ export default class Courses {
 
   delete( id ) {
     let course = this.get(id);
-    if (!course) throw "Could not find a course with id = " + id;
+    if (!course) throw new ReferenceError("Could not find a course with id = " + id);
 
     // remove the course from all its enrolled students
     if (course.students) {
@@ -76,9 +76,9 @@ export default class Courses {
 
   addStudent( courseID, student ) {
     let course = this.get( courseID );
-    if (!course) throw "Could not find course with id = " + courseID;
+    if (!course) throw new ReferenceError("Could not find course with id = " + courseID);
     if (this.isStudentEnrolled(course, student)) {
-      throw student + " is alread enrolled in " + course;
+      throw new ReferenceError(student + " is alread enrolled in " + course);
     }
     // add student to the class
     course.students.push( student );
@@ -89,9 +89,9 @@ export default class Courses {
 
   removeStudent( courseID, student ) {
     let course = this.get( courseID );
-    if (!course) throw "Could not find course with id = " + courseID;
+    if (!course) throw new ReferenceError("Could not find course with id = " + courseID);
     if (!this.isStudentEnrolled(course, student)) {
-      throw student + " is not enrolled in " + course;
+      throw new ReferenceError(student + " is not enrolled in " + course);
     }
 
     // remove student from class

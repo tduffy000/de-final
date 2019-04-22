@@ -16,7 +16,7 @@ export default class Assignments {
   }
 
   create( name, course ) {
-    if (!course) throw "Course field is not defined";
+    if (!course) throw new TypeError("Course field is not defined");
     let isNameUniqueInCourse = !course.assignments.reduce(
       (acc, a) => acc || a.name === name,
       false
@@ -40,11 +40,13 @@ export default class Assignments {
   createGrade(id, student, grade) {
     let assignment = this.assignments.get(id)
 
-    if (!student) throw "Student field is not defined";
+    if (!student) throw new TypeError("Student field is not defined");
     let studentAssignment = student.assignments.find(
       a => a.id == id
     );
-    if (!studentAssignment) throw "Student: " + student.name + "does not have assignment with id = " + id;
+    if (!studentAssignment) {
+      throw new ReferenceError("Student: " + student.name + "does not have assignment with id = " + id);
+    };
 
     // push onto this store of Assignments
     const assignmentGrade = {
