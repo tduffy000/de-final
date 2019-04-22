@@ -9,6 +9,7 @@ import _ from "lodash";
 import Users from "./users.js";
 import UserSessions from "./user_sessions.js";
 import Courses from "./courses.js";
+import Assignments from "./assignments.js";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
