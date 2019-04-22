@@ -12,8 +12,6 @@ import Courses from "./courses.js";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
-// @see https://stackoverflow.com/questions/1144705/best-way-to-store-a-key-value-array-in-javascript
-
 // Construct a schema, using GraphQL schema language
 // TODO: consider that the database should handle the ID's to maintain uniqueness
 const typeDefs = gql`
@@ -129,6 +127,7 @@ const typeDefs = gql`
 var users = new Users();
 var userSessions = new UserSessions();
 var courses = new Courses();
+var assignments = new Assignments();
 
 const resolvers = {
   // can't you just use __resolveType => obj.role ?
@@ -158,22 +157,27 @@ const resolvers = {
       users.update(id, { user })
     },
     createCourse: (root, args, context) => {
-      let faculty = users.getFaculty()
-      let prof = faculty.find( f => f.id == args.facultyID )
+      let prof = users.getProfessor( args.facultyID )
       courses.create( args.name, prof )
     },
     deleteCourse: (root, args, context) => {
       courses.delete( args.courseID )
     },
     addStudentToCourse: (roots, args, context) => {
-      let students = users.getStudents()
-      let student = students.find( s => s.id == args.studentID )
+      let student = users.getStudent( args.studentID )
       courses.addStudent( args.courseID, student )
     },
     removeStudentFromCourse: (roots, args, context) => {
-      let students = users.getStudents()
-      let student = students.find( s => s.id == args.studentID )
+      let student = users.getStudent( args.studentID )
       courses.removeStudent( args.courseID, student )
+    },
+    createAssignment: (roots, args, context) => {
+      let course = courses.get( args.courseID )
+      assignments.create( args.name, course )
+    },
+    createAssignmentGrade: (roots, args, context) => {
+      let student = users.getStudent( args.studentID )
+      assignments.createGrade( args.assignmentID, student, args.grade )
     }
   }
 };

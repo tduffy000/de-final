@@ -9,16 +9,18 @@ export default class Courses {
     return this.courses;
   }
 
-  // TODO: re-do b/c we're deleting courses
   get( id ) {
-    return this.courses[id - 1];
+    return this.courses.find( c => c.id == id);
   }
 
-  // the ID's should be the keys
-  // {id : {...values}}
-  // @see https://stackoverflow.com/questions/1144705/best-way-to-store-a-key-value-array-in-javascript
   create( name, professor ) {
     if (!professor) throw "Professor field not defined!";
+    let isNameUnique = !this.courses.reduce(
+      (acc, c) => acc || c.name === name,
+      false
+    );
+    if (!isNameUnique) throw course.name + " is already being used";
+
     const course = {
                       id: this.nextID++,
                       name: name,
@@ -27,13 +29,8 @@ export default class Courses {
                       assignments: []
                     };
 
-    let isNameUnique = !this.courses.reduce(
-      (acc, c) => acc || c.name === course.name,
-      false
-    );
-    if (!isNameUnique) throw course.name + " is already being used";
-
     this.courses.push( course );
+    // add course to professors' load
     professor.courses.push( course );
     return course;
   }

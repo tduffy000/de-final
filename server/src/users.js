@@ -1,4 +1,4 @@
-import crypto from "crypto";
+// import crypto from "crypto";
 import AuthenticationError from "apollo-server";
 
 export default class Users {
@@ -32,6 +32,10 @@ export default class Users {
     ];
   };
 
+  get(id) {
+    return this.users.find( u => u.id == id);
+  }
+
   filterByRole( role ) {
     return this.users.filter( u => u.role === role );
   }
@@ -44,8 +48,22 @@ export default class Users {
     return this.filterByRole("Student");
   }
 
+  getStudent(id) {
+    const students = this.getStudents();
+    let student = students.find( s => s.id == id );
+    if (!student) throw "There is no student with id = " + id;
+    return student;
+  }
+
   getFaculty() {
     return this.filterByRole("Faculty");
+  }
+
+  getProfessor(id) {
+    const faculty = this.getFaculty();
+    let prof = faculty.find( f => f.id == id );
+    if (!prof) throw "There is no faculty member with id = " + id;
+    return prof;
   }
 
   getStudentByEmail(email) {
@@ -56,16 +74,6 @@ export default class Users {
     return this.users;
   }
 
-  // TODO: this needs to change b/c we can now delete users
-  // i.e. users should be {id : {..values}}
-  // unless we mark for deletion without removing
-  get(id) {
-    return this.users[id - 1];
-  }
-
-  // TODO: the id's should be the keys for faster lookup
-  // {id : {...values}}
-  // @see https://stackoverflow.com/questions/1144705/best-way-to-store-a-key-value-array-in-javascript
   create({ user }) {
     const base = {
                     id: this.nextID++,
@@ -97,13 +105,12 @@ export default class Users {
     return u;
   }
 
-  // TODO: deleting by id messes us get() which uses id as index on this.users
   delete(id) {
-    let u = this.users.find( u => u.id === id );
+    let u = this.users.get(id);
     if (!u) throw "Could not find user with id = " + id;
     this.users = this.users.filter(
       user => user.id !== u.id
     );
-      return u
+    return u
   }
 }
