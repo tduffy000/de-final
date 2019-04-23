@@ -36,6 +36,10 @@ export default class Users {
     return this.users.find( u => u.id == id);
   }
 
+  getRole(id) {
+    return this.users.find( u => u.id == id ).role;
+  }
+
   filterByRole( role ) {
     return this.users.filter( u => u.role === role );
   }

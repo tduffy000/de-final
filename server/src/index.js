@@ -152,31 +152,39 @@ const resolvers = {
   },
   Mutation: {
     createUser: (root, { user }, context) => {
+      // TODO: check if user is admin
       users.create({ user })
     },
     updateUser: (root, id, { user }, context) => {
+      // TODO: check if user is admin
       users.update(id, { user })
     },
     createCourse: (root, args, context) => {
+      // TODO: check if user is faculty
       let prof = users.getProfessor( args.facultyID )
       courses.create( args.name, prof )
     },
     deleteCourse: (root, args, context) => {
+      // TODO: check if user is faculty
       courses.delete( args.courseID )
     },
     addStudentToCourse: (roots, args, context) => {
+      // TODO: check if user is faculty
       let student = users.getStudent( args.studentID )
       courses.addStudent( args.courseID, student )
     },
     removeStudentFromCourse: (roots, args, context) => {
+      // TODO: check if user is faculty
       let student = users.getStudent( args.studentID )
       courses.removeStudent( args.courseID, student )
     },
     createAssignment: (roots, args, context) => {
+      // TODO: check if user is faculty
       let course = courses.get( args.courseID )
       assignments.create( args.name, course )
     },
     createAssignmentGrade: (roots, args, context) => {
+      // TODO: check if user is faculty
       let student = users.getStudent( args.studentID )
       assignments.createGrade( args.assignmentID, student, args.grade )
     }
