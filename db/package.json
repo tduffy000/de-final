@@ -1,15 +1,15 @@
 {
-  "name": "Database",
-  "version": "0.0.1",
-  "description": "Database for DE Final Project",
+  "name": "db",
+  "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/tduffy000/de-final",
-  "author": "Carlos Martinez, Divya Sankar, Thomas Duffy",
   "license": "MIT",
   "dependencies": {
-    "pg": "^7.9.0",
+    "pg": "^7.10.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^5.6.0",
+    "sequelize": "^5.7.5",
     "sequelize-cli": "^5.4.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
   }
 }
