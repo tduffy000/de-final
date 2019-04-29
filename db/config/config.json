@@ -1,20 +1,20 @@
 {
   "development": {
-    "username": "dummy",
+    "username": "thomas",
     "password": "password",
     "database": "app_db_dev",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
-    "username": "dummy",
+    "username": "thomas",
     "password": "password",
     "database": "app_db_test",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "production": {
-    "username": "dummy",
+    "username": "thomas",
     "password": "password",
     "database": "app_db_production",
     "host": "127.0.0.1",
