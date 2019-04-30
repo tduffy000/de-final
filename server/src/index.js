@@ -8,7 +8,7 @@ import _ from "lodash";
 // Database models
 const models = require("../../db/models");
 
-// Classe files
+// Class files
 import Users from "./users.js";
 import UserSessions from "./user_sessions.js";
 import Courses from "./courses.js";
@@ -133,67 +133,6 @@ var userSessions = new UserSessions();
 var courses = new Courses();
 var assignments = new Assignments();
 
-const resolvers = {
-  // can't you just use __resolveType => obj.role ?
-  User: {
-    __resolveType(obj, context, info) {
-      switch ( obj.role ) {
-        case "Student":
-          return "Student";
-        case "Admin":
-          return "Admin";
-        case "Faculty":
-          return "Faculty";
-      }
-    }
-  },
-  Query: {
-    users: (root, args, context) => users.getUsers(),
-    students: (root, args, context, info) => users.getStudents(),
-    faculty: (root, args, context, info) => users.getFaculty(),
-    courses: (root, args, context, info) => courses.getCourses()
-  },
-  Mutation: {
-    createUser: (root, { user }, context) => {
-      // TODO: check if user is admin
-      users.create({ user })
-    },
-    updateUser: (root, id, { user }, context) => {
-      // TODO: check if user is admin
-      users.update(id, { user })
-    },
-    createCourse: (root, args, context) => {
-      // TODO: check if user is faculty
-      let prof = users.getProfessor( args.facultyID )
-      courses.create( args.name, prof )
-    },
-    deleteCourse: (root, args, context) => {
-      // TODO: check if user is faculty
-      courses.delete( args.courseID )
-    },
-    addStudentToCourse: (roots, args, context) => {
-      // TODO: check if user is faculty
-      let student = users.getStudent( args.studentID )
-      courses.addStudent( args.courseID, student )
-    },
-    removeStudentFromCourse: (roots, args, context) => {
-      // TODO: check if user is faculty
-      let student = users.getStudent( args.studentID )
-      courses.removeStudent( args.courseID, student )
-    },
-    createAssignment: (roots, args, context) => {
-      // TODO: check if user is faculty
-      let course = courses.get( args.courseID )
-      assignments.create( args.name, course )
-    },
-    createAssignmentGrade: (roots, args, context) => {
-      // TODO: check if user is faculty
-      let student = users.getStudent( args.studentID )
-      assignments.createGrade( args.assignmentID, student, args.grade )
-    }
-  }
-};
-
 const getUserForToken = token => {
   try {
     const { id, sessionID } = jwt.verify(token, APP_SECRET);
@@ -221,7 +160,6 @@ const getUserForToken = token => {
 };
 
 const makeResolver = (resolver, options) => {
-
   return (root, args, context, info) => {
     const o = {
       requireUser: true,
@@ -231,13 +169,13 @@ const makeResolver = (resolver, options) => {
     const { requireUser } = o;
     const { roles } = o;
     let user = null;
-    let sessionId = null;
+    let sessionID = null;
 
     if ( requireUser ) {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      [user, sessionId] = getUserForToken(token);
+      [user, sessionID] = getUserForToken(token);
       if (!user) throw new AuthenticationError("Invalid Token/User");
 
       const userRole = user.role;
@@ -249,10 +187,68 @@ const makeResolver = (resolver, options) => {
     return resolver(
         root,
         args,
-        { ...context, user: user, sessionId: sessionId, db: db},
+        { ...context, user: user, sessionID: sessionID, db: db},
         info
     );
   };
+};
+
+// TODO: move mutations to makeResolver()
+const resolvers = {
+  User: {
+    __resolveType: (user, context, info) => user.role
+  },
+  Query: {
+    users: makeResolver( (root, args, context, info) => users.getUsers() ),
+    currentUser: makeResolver( (root, args, context, info) => context.user),
+    students: makeResolver( (root, args, context, info) => users.getStudents() ),
+    faculty: makeResolver( (root, args, context, info) => users.getFaculty() ),
+    courses: makeResolver( (root, args, context, info) => courses.getCourses() )
+  },
+  Mutation: {
+    loginUser: makeResolver(
+      (root, args, context, info) => {
+        return users.login(args.email, args.password);
+      },
+      {requireUser: false}
+    ),
+    logoutUser: makeResolver(
+      (root, args, context, info) => {
+        const sessionID = context.sessionID;
+        userSessions.invalidateSession(sessionID);
+        return true;
+      }
+    ),
+    createUser: (root, { user }, context) => {
+      users.create({ user })
+    },
+    updateUser: (root, id, { user }, context) => {
+      users.update(id, { user })
+    },
+    createCourse: (root, args, context) => {
+      let prof = users.getProfessor( args.facultyID )
+      courses.create( args.name, prof )
+    },
+    deleteCourse: (root, args, context) => {
+      courses.delete( args.courseID )
+    },
+    addStudentToCourse: (roots, args, context) => {
+      let student = users.getStudent( args.studentID )
+      courses.addStudent( args.courseID, student )
+    },
+    removeStudentFromCourse: (roots, args, context) => {
+      let student = users.getStudent( args.studentID )
+      courses.removeStudent( args.courseID, student )
+    },
+    createAssignment: (roots, args, context) => {
+      let course = courses.get( args.courseID )
+      assignments.create( args.name, course )
+    },
+    createAssignmentGrade: (roots, args, context) => {
+      let student = users.getStudent( args.studentID )
+      assignments.createGrade( args.assignmentID, student, args.grade )
+    }
+  }
 };
 
 const server = new ApolloServer({
