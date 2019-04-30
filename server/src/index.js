@@ -194,6 +194,67 @@ const resolvers = {
   }
 };
 
+const getUserForToken = token => {
+  try {
+    const { id, sessionID } = jwt.verify(token, APP_SECRET);
+    const user = users.get(id);
+
+    // TODO: a better way to do this with a database is to
+    // join the Users table with the UserSessions table on
+    // users.id = user_sessions.user_id where session_id = sessionID
+    // this would get both the user and the sessionID in one query
+    const session = userSessions.getSession(sessionID);
+    if (!session) {
+      throw new AuthenticationError('Invalid Session');
+    }
+
+    return [user, session.id];
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      // invalidate the sesssion if expired
+      const { sessionID } = jwt.decode(token);
+      userSessions.invalidateSession(sessionID);
+      throw new AuthenticationError('Session Expired');
+    }
+    throw new AuthenticationError('Bad Token');
+  }
+};
+
+const makeResolver = (resolver, options) => {
+
+  return (root, args, context, info) => {
+    const o = {
+      requireUser: true,
+      roles: ["Admin", "Student", "Faculty"],
+      ...options
+    }
+    const { requireUser } = o;
+    const { roles } = o;
+    let user = null;
+    let sessionId = null;
+
+    if ( requireUser ) {
+      const token = context.req.headers.authorization || "";
+      if (!token) throw new AuthenticationError("Token required!");
+
+      [user, sessionId] = getUserForToken(token);
+      if (!user) throw new AuthenticationError("Invalid Token/User");
+
+      const userRole = user.role;
+      if (_.indexOf(roles, userRole) === -1) {
+        throw new ForbiddenError("Operation not permitted for role: " + userRole);
+      }
+    }
+
+    return resolver(
+        root,
+        args,
+        { ...context, user: user, sessionId: sessionId, db: db},
+        info
+    );
+  };
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
