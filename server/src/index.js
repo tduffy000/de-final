@@ -5,7 +5,10 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import _ from "lodash";
 
-// Classes
+// Database models
+const models = require("../../db/models");
+
+// Classe files
 import Users from "./users.js";
 import UserSessions from "./user_sessions.js";
 import Courses from "./courses.js";
