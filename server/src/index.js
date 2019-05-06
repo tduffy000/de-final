@@ -4,20 +4,46 @@ import { ApolloServer,
         ForbiddenError,
         AuthenticationError } from "apollo-server";
 import _ from "lodash";
-
-// Database models
-const models = require("../../db/models");
-
-// Class files
-import Users from "./users.js";
-import UserSessions from "./user_sessions.js";
-import Courses from "./courses.js";
-import Assignments from "./assignments.js";
+import resolvers from "./resolvers";
+import db from "../../db/models";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
+const makeResolver = (resolver, options) => {
+  return (root, args, context, info) => {
+    const o = {
+      requireUser: true,
+      roles: ["Admin", "Student", "Faculty"],
+      ...options
+    }
+    const { requireUser } = o;
+    const { roles } = o;
+    let user = null;
+    let sessionID = null;
+
+    if ( requireUser ) {
+      const token = context.req.headers.authorization || "";
+      if (!token) throw new AuthenticationError("Token required!");
+
+      [user, sessionID] = getUserForToken(token);
+      if (!user) throw new AuthenticationError("Invalid Token/User");
+
+      const userRole = user.role;
+      if (_.indexOf(roles, userRole) === -1) {
+        throw new ForbiddenError("Operation not permitted for role: " + userRole);
+      }
+    }
+
+    return resolver(
+        root,
+        args,
+        {...context, user: user, sessionID: sessionID, db: db},
+        info
+    );
+  };
+};
+
 // Construct a schema, using GraphQL schema language
-// TODO: consider that the database should handle the ID's to maintain uniqueness
 const typeDefs = gql`
   type Query {
     users: [User]
@@ -128,15 +154,10 @@ const typeDefs = gql`
   }
 `;
 
-var users = new Users();
-var userSessions = new UserSessions();
-var courses = new Courses();
-var assignments = new Assignments();
-
 const getUserForToken = token => {
   try {
     const { id, sessionID } = jwt.verify(token, APP_SECRET);
-    const user = users.get(id);
+    const user = db.user.findById(id);
 
     // TODO: a better way to do this with a database is to
     // join the Users table with the UserSessions table on
@@ -150,104 +171,12 @@ const getUserForToken = token => {
     return [user, session.id];
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      // invalidate the sesssion if expired
+      // invalidate the session if expired
       const { sessionID } = jwt.decode(token);
       userSessions.invalidateSession(sessionID);
       throw new AuthenticationError('Session Expired');
     }
     throw new AuthenticationError('Bad Token');
-  }
-};
-
-const makeResolver = (resolver, options) => {
-  return (root, args, context, info) => {
-    const o = {
-      requireUser: true,
-      roles: ["Admin", "Student", "Faculty"],
-      ...options
-    }
-    const { requireUser } = o;
-    const { roles } = o;
-    let user = null;
-    let sessionID = null;
-
-    if ( requireUser ) {
-      const token = context.req.headers.authorization || "";
-      if (!token) throw new AuthenticationError("Token required!");
-
-      [user, sessionID] = getUserForToken(token);
-      if (!user) throw new AuthenticationError("Invalid Token/User");
-
-      const userRole = user.role;
-      if (_.indexOf(roles, userRole) === -1) {
-        throw new ForbiddenError("Operation not permitted for role: " + userRole);
-      }
-    }
-
-    return resolver(
-        root,
-        args,
-        { ...context, user: user, sessionID: sessionID, db: db},
-        info
-    );
-  };
-};
-
-// TODO: move mutations to makeResolver()
-const resolvers = {
-  User: {
-    __resolveType: (user, context, info) => user.role
-  },
-  Query: {
-    users: makeResolver( (root, args, context, info) => users.getUsers() ),
-    currentUser: makeResolver( (root, args, context, info) => context.user),
-    students: makeResolver( (root, args, context, info) => users.getStudents() ),
-    faculty: makeResolver( (root, args, context, info) => users.getFaculty() ),
-    courses: makeResolver( (root, args, context, info) => courses.getCourses() )
-  },
-  Mutation: {
-    loginUser: makeResolver(
-      (root, args, context, info) => {
-        return users.login(args.email, args.password);
-      },
-      {requireUser: false}
-    ),
-    logoutUser: makeResolver(
-      (root, args, context, info) => {
-        const sessionID = context.sessionID;
-        userSessions.invalidateSession(sessionID);
-        return true;
-      }
-    ),
-    createUser: (root, { user }, context) => {
-      users.create({ user })
-    },
-    updateUser: (root, id, { user }, context) => {
-      users.update(id, { user })
-    },
-    createCourse: (root, args, context) => {
-      let prof = users.getProfessor( args.facultyID )
-      courses.create( args.name, prof )
-    },
-    deleteCourse: (root, args, context) => {
-      courses.delete( args.courseID )
-    },
-    addStudentToCourse: (roots, args, context) => {
-      let student = users.getStudent( args.studentID )
-      courses.addStudent( args.courseID, student )
-    },
-    removeStudentFromCourse: (roots, args, context) => {
-      let student = users.getStudent( args.studentID )
-      courses.removeStudent( args.courseID, student )
-    },
-    createAssignment: (roots, args, context) => {
-      let course = courses.get( args.courseID )
-      assignments.create( args.name, course )
-    },
-    createAssignmentGrade: (roots, args, context) => {
-      let student = users.getStudent( args.studentID )
-      assignments.createGrade( args.assignmentID, student, args.grade )
-    }
   }
 };
 

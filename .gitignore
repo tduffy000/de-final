@@ -6,3 +6,6 @@ yarn-error.log
 
 # System-specific psql stuff
 db/*.sh
+
+# Test scripts
+run_tests.sh
