@@ -8,9 +8,10 @@ module.exports = (sequelize, DataTypes) => {
     Assignment.belongsTo(models.Course, {
       foreignKey: "assignmentID"
     });
-    Assignment.belongsTo(models.User, {
+    Assignment.belongsToMany(models.User, {
+      through: models.StudentAssignment,
       foreignKey: "assignmentID"
-    })
+    });
   };
   return Assignment;
 };
