@@ -65,11 +65,23 @@ export default {
           where: {id: id}
         })
       },
-      addStudentToCourse: (roots, args, context) => {
+      addStudentToCourse: (roots, { courseID, userID }, { db }, context) => {
         // StudentCourse table
+        db.studentcourse.findOrCreate({
+          where: {
+            courseID: courseID,
+            userID: userID
+          }
+        })
       },
-      removeStudentFromCourse: (roots, args, context) => {
+      removeStudentFromCourse: (roots, { courseID, userID }, { db }, context) => {
         // StudentCourse table
+        db.studentcourse.destroy({
+          where: {
+            courseID: courseID,
+            userID: userID
+          }
+        })
       },
       createAssignment: (roots, {assignmentName, courseID}, context) => {
         db.assignment.create({
