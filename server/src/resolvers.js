@@ -89,8 +89,15 @@ export default {
           courseID: courseID
         })
       },
-      createAssignmentGrade: (roots, args, context) => {
+      createAssignmentGrade: (roots, { assignmentID, studentID, courseID, grade }, { db }, context) => {
         // AssignmentGrade table
+        db.studentassignment.update({
+          name: name,
+          assignmentID: assignmentID,
+          studentID: studentID,
+          courseID: courseID,
+          grade: grade
+        })
       }
     }
 };
