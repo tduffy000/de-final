@@ -26,10 +26,6 @@ module.exports = (sequelize, DataTypes) => {
       through: models.StudentCourse,
       foreignKey: "userID"
     });
-    User.hasMany(models.Assignment, {
-      through: models.StudentAssignment,
-      foreignKey: "userID"
-    });
     User.hasOne(models.UserSession, {
       foreignKey: "userID"
     })

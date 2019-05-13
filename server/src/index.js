@@ -9,40 +9,6 @@ import db from "../../db/models";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
-const makeResolver = (resolver, options) => {
-  return (root, args, context, info) => {
-    const o = {
-      requireUser: true,
-      roles: ["Admin", "Student", "Faculty"],
-      ...options
-    }
-    const { requireUser } = o;
-    const { roles } = o;
-    let user = null;
-    let sessionID = null;
-
-    if ( requireUser ) {
-      const token = context.req.headers.authorization || "";
-      if (!token) throw new AuthenticationError("Token required!");
-
-      [user, sessionID] = getUserForToken(token);
-      if (!user) throw new AuthenticationError("Invalid Token/User");
-
-      const userRole = user.role;
-      if (_.indexOf(roles, userRole) === -1) {
-        throw new ForbiddenError("Operation not permitted for role: " + userRole);
-      }
-    }
-
-    return resolver(
-        root,
-        args,
-        {...context, user: user, sessionID: sessionID, db: db},
-        info
-    );
-  };
-};
-
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   type Query {
