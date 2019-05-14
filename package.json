@@ -5,8 +5,8 @@
   "scripts": {
     "db_test": "nodemon --exec babel-node src/db_test.js",
     "start": "nodemon --exec babel-node src/index.js localhost 4000",
-    "build": "babel src --out-dir lib",
-    "serve": "node lib/server.js"
+    "build": "babel src --out-dir lib --copy-files",
+    "serve": "node lib/index.js"
   },
   "license": "MIT",
   "devDependencies": {
