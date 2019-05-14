@@ -147,11 +147,14 @@ const getUserForToken = token => {
 };
 
 const server = new ApolloServer({
+  cors: false,  
   typeDefs,
   resolvers,
   context: request => {
     return request;
-  }
+  },
+    introspection: true,
+    playground: true
 });
 
 const PORT = process.env.PORT || 4000;
