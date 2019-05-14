@@ -2,7 +2,7 @@ import { ApolloServer,
         gql,
         ForbiddenError,
         AuthenticationError } from "apollo-server";
-import db from "../../db/models";
+import db from "../models";
 
 // TODO: make async
 const makeResolver = (resolver, options) => {

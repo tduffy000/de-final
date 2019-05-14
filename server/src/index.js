@@ -5,7 +5,7 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import _ from "lodash";
 import resolvers from "./resolvers";
-import db from "../../db/models";
+import db from "../models";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
