@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      // TODO: how to handle bubbling up this exception (i.e. invalid e-mail)?
       validate: {
         isEmail: true
       }

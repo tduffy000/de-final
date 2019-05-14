@@ -1,0 +1,25 @@
+// add your own credentials; password not required unless running on Linux
+// 
+{
+  "development": {
+    "username": "thomas",
+    "password": "password",
+    "database": "app_db_dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "thomas",
+    "password": "password",
+    "database": "app_db_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "thomas",
+    "password": "password",
+    "database": "app_db_production",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

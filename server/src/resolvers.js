@@ -1,4 +1,10 @@
+import { ApolloServer,
+        gql,
+        ForbiddenError,
+        AuthenticationError } from "apollo-server";
+import db from "../../db/models";
 
+// TODO: make async
 const makeResolver = (resolver, options) => {
   return (root, args, context, info) => {
     const o = {
@@ -10,7 +16,7 @@ const makeResolver = (resolver, options) => {
     const { roles } = o;
     let user = null;
     let sessionID = null;
-
+/*
     if ( requireUser ) {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
@@ -23,11 +29,12 @@ const makeResolver = (resolver, options) => {
         throw new ForbiddenError("Operation not permitted for role: " + userRole);
       }
     }
-
+*/
     return resolver(
         root,
         args,
-        {...context, user: user, sessionID: sessionID, db: db},
+        // {...context, user: user, sessionID: sessionID, db: db},
+        {...context, db: db},
         info
     );
   };
@@ -41,20 +48,20 @@ export default {
     Query: {
       currentUser: makeResolver( (root, args, context, { db }, info) => context.user),
       users: makeResolver((root, args, context, { db }, info) => {
-        db.user.findAll()
+        db.User.findAll()
       }),
       students: makeResolver((root, args, context, { db }, info) => {
-        db.user.findAll({
+        db.User.findAll({
           where: {role: "Student"}
         })
       }),
       faculty: makeResolver((root, args, context, { db }, info) => {
-        db.user.findAll({
+        db.User.findAll({
           where: {role: "Professor"}
         })
       }),
       courses: makeResolver((root, args, context, { db }, info) => {
-        db.course.findAll()
+        db.Course.findAll()
       })
     },
     Mutation: {
@@ -72,7 +79,7 @@ export default {
         }
       ),
       createUser: (root, { first, last, email, role }, { db }, context) => {
-        db.user.create({
+        db.User.create({
           firstName: first,
           lastName: last,
           email: email,
@@ -80,7 +87,7 @@ export default {
         })
       },
       updateUser: (root, { id }, { first, last, email, role }, { db }, context) => {
-        db.user.update({
+        db.User.update({
           firstName: first,
           lastName: last,
           email: email,
@@ -90,19 +97,19 @@ export default {
         })
       },
       createCourse: (root, { courseName, professorID }, { db }, context) => {
-        db.course.create({
+        db.Course.create({
           courseName: courseName,
           professorID: professorID
         })
       },
       deleteCourse: (root, { id }, context) => {
-        db.course.destroy({
+        db.Course.destroy({
           where: {id: id}
         })
       },
       addStudentToCourse: (roots, { courseID, userID }, { db }, context) => {
         // StudentCourse table
-        db.studentcourse.findOrCreate({
+        db.StudentCourse.findOrCreate({
           where: {
             courseID: courseID,
             userID: userID
@@ -111,7 +118,7 @@ export default {
       },
       removeStudentFromCourse: (roots, { courseID, userID }, { db }, context) => {
         // StudentCourse table
-        db.studentcourse.destroy({
+        db.StudentCourse.destroy({
           where: {
             courseID: courseID,
             userID: userID
@@ -119,14 +126,14 @@ export default {
         })
       },
       createAssignment: (roots, {assignmentName, courseID}, context) => {
-        db.assignment.create({
+        db.Assignment.create({
           assignmentName: assignmentName,
           courseID: courseID
         })
       },
       createAssignmentGrade: (roots, { assignmentID, studentID, courseID, grade }, { db }, context) => {
         // AssignmentGrade table
-        db.studentassignment.update({
+        db.StudentAssignment.update({
           name: name,
           assignmentID: assignmentID,
           studentID: studentID,

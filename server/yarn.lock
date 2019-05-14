@@ -818,6 +818,11 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
+"@types/graphql@^14.2.0":
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-14.2.0.tgz#74e1da5f2a4a744ac6eb3ed57b48242ea9367202"
+  integrity sha512-lELg5m6eBOmATWyCZl8qULEOvnPIUG6B443yXKj930glXIgwQirIBPp5rthP2amJW0YSzUg2s5sfgba4mRRCNw==
+
 "@types/long@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
@@ -916,6 +921,17 @@ apollo-cache-control@0.5.2:
   dependencies:
     apollo-server-env "2.2.0"
     graphql-extensions "0.5.4"
+
+apollo-datasource-rest@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/apollo-datasource-rest/-/apollo-datasource-rest-0.3.2.tgz#2f9dcc6531a7258535007894717d3806ecc32c7f"
+  integrity sha512-56Mt4VTlzeqHr+NPAkIi9KQYBhuOnn1PGrIg9X/nQ2gjY/sujiXiS1EmFo7vLbdO5NBNhfqvPXffgWWzZI1asQ==
+  dependencies:
+    apollo-datasource "0.3.1"
+    apollo-server-caching "0.3.1"
+    apollo-server-env "2.2.0"
+    apollo-server-errors "2.2.1"
+    http-cache-semantics "^4.0.0"
 
 apollo-datasource@0.3.1:
   version "0.3.1"
@@ -2255,6 +2271,11 @@ homedir-polyfill@^1.0.1:
   integrity sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==
   dependencies:
     parse-passwd "^1.0.0"
+
+http-cache-semantics@^4.0.0:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.0.3.tgz#495704773277eeef6e43f9ab2c2c7d259dda25c5"
+  integrity sha512-TcIMG3qeVLgDr1TEd2XvHaTnMPwYQUQMIBLy+5pLSDKYFc7UIqj39w8EGzZkaxoLv/l2K8HaI0t5AVA+YYgUew==
 
 http-errors@1.6.3, http-errors@~1.6.2, http-errors@~1.6.3:
   version "1.6.3"
