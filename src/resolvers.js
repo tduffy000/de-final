@@ -4,7 +4,7 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import db from "../models";
 
-// TODO: make async
+// TODO: make async (?)
 const makeResolver = (resolver, options) => {
   return (root, args, context, info) => {
     const o = {
@@ -30,6 +30,7 @@ const makeResolver = (resolver, options) => {
       }
     }
 */
+    // TODO: update context to include login credentials (right now in DB testing phase)
     return resolver(
         root,
         args,
@@ -41,27 +42,27 @@ const makeResolver = (resolver, options) => {
 };
 
 export default {
-    // TODO: ensure permissions are appropriate
+    // TODO: ensure permissions are appropriate (found in context by way of currentUser)
     User: {
       __resolveType: (user, context, info) => user.role
     },
     Query: {
-      currentUser: makeResolver( (root, args, context, { db }, info) => context.user),
-      users: makeResolver((root, args, context, { db }, info) => {
-        db.User.findAll()
+      currentUser: makeResolver( (root, args, { db }, info) => context.user),
+      users: makeResolver((root, args, { db }, info) => {
+        return db.User.findAll();
       }),
-      students: makeResolver((root, args, context, { db }, info) => {
-        db.User.findAll({
+      students: makeResolver((root, args, { db }, info) => {
+        return db.User.findAll({
           where: {role: "Student"}
-        })
+        });
       }),
-      faculty: makeResolver((root, args, context, { db }, info) => {
-        db.User.findAll({
+      faculty: makeResolver((root, args, { db }, info) => {
+        return db.User.findAll({
           where: {role: "Professor"}
-        })
+        });
       }),
-      courses: makeResolver((root, args, context, { db }, info) => {
-        db.Course.findAll()
+      courses: makeResolver((root, args, { db }, info) => {
+        return db.Course.findAll()
       })
     },
     Mutation: {
@@ -78,7 +79,7 @@ export default {
           return true;
         }
       ),
-      createUser: (root, { first, last, email, role }, { db }, context) => {
+      createUser: (root, { first, last, email, role }, { db }, info) => {
         db.User.create({
           firstName: first,
           lastName: last,
@@ -86,7 +87,7 @@ export default {
           role: role
         })
       },
-      updateUser: (root, { id }, { first, last, email, role }, { db }, context) => {
+      updateUser: (root, { id, first, last, email, role }, { db }, info) => {
         db.User.update({
           firstName: first,
           lastName: last,
@@ -96,9 +97,9 @@ export default {
           where: {id: id}
         })
       },
-      createCourse: (root, { courseName, professorID }, { db }, context) => {
+      createCourse: (root, { name, professorID }, { db }, info) => {
         db.Course.create({
-          courseName: courseName,
+          courseName: name,
           professorID: professorID
         })
       },
@@ -107,7 +108,7 @@ export default {
           where: {id: id}
         })
       },
-      addStudentToCourse: (roots, { courseID, userID }, { db }, context) => {
+      addStudentToCourse: (root, { courseID, userID }, { db }, context) => {
         // StudentCourse table
         db.StudentCourse.findOrCreate({
           where: {
@@ -116,7 +117,7 @@ export default {
           }
         })
       },
-      removeStudentFromCourse: (roots, { courseID, userID }, { db }, context) => {
+      removeStudentFromCourse: (root, { courseID, userID }, { db }, info) => {
         // StudentCourse table
         db.StudentCourse.destroy({
           where: {
@@ -125,21 +126,21 @@ export default {
           }
         })
       },
-      createAssignment: (roots, {assignmentName, courseID}, context) => {
+      createAssignment: (root, { name, courseID }, context, info) => {
         db.Assignment.create({
-          assignmentName: assignmentName,
+          assignmentName: name,
           courseID: courseID
         })
       },
-      createAssignmentGrade: (roots, { assignmentID, studentID, courseID, grade }, { db }, context) => {
+      createAssignmentGrade: (root, { assignmentID, studentID, courseID, grade }, { db }, info) => {
         // AssignmentGrade table
         db.StudentAssignment.update({
-          name: name,
           assignmentID: assignmentID,
           studentID: studentID,
           courseID: courseID,
           grade: grade
         })
       }
+      // TODO: GPA can be calculated by a filter on Assignment grade table
     }
 };

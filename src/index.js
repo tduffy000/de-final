@@ -10,11 +10,12 @@ import db from "../models";
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
 // Construct a schema, using GraphQL schema language
+// TODO: update role implementations to use role-specific objects
 const typeDefs = gql`
   type Query {
     users: [User]
     students: [Student]
-    faculty: [Faculty]
+    faculty: [Professor]
     currentUser: User
     courses: [Course]
   }
@@ -52,8 +53,8 @@ const typeDefs = gql`
   }
 
   input UserInput {
-    # First and last name
-    name: String!
+    firstName: String!
+    lastName: String!
     email: String!
     role: Role
     password: String
@@ -62,19 +63,21 @@ const typeDefs = gql`
   enum Role {
     Admin
     Student
-    Faculty
+    Professor
   }
 
   interface User {
     id: ID!
-    name: String!
+    firstName: String!
+    lastName: String!
     email: String!
     role: Role!
   }
 
   type Student implements User {
     id: ID!
-    name: String!
+    firstName: String!
+    lastName: String!
     email: String!
     role: Role!
     courses: [Course]
@@ -82,9 +85,10 @@ const typeDefs = gql`
     gpa: Float!
   }
 
-  type Faculty implements User {
+  type Professor implements User {
     id: ID!
-    name: String!
+    firstName: String!
+    lastName: String!
     email: String!
     role: Role!
     courses: [Course]
@@ -92,22 +96,23 @@ const typeDefs = gql`
 
   type Admin implements User {
     id: ID!
-    name: String!
+    firstName: String!
+    lastName: String!
     email: String!
     role: Role!
   }
 
   type Course {
     id: ID!
-    name: String!
-    professor: Faculty
+    courseName: String!
+    professor: Professor
     students: [Student]
     assignments: [Assignment]
   }
 
   type Assignment {
     id: ID!
-    name: String!
+    assignmentName: String!
     course: Course!
     grades: [AssignmentGrade]
   }
@@ -120,11 +125,36 @@ const typeDefs = gql`
   }
 `;
 
+/**
+* See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
+* generates random string of characters i.e salt
+* @function
+* @param {number} length - Length of the random string.
+*/
+const genRandomString = length => {
+ return crypto
+   .randomBytes(Math.ceil(length / 2))
+   .toString('hex') /** convert to hexadecimal format */
+   .slice(0, length); /** return required number of characters */
+};
+
+const sha512 = (password, salt) => {
+ var hash = crypto.createHmac(
+   'sha512',
+   salt,
+ ); /** Hashing algorithm sha512 */
+ hash.update(password);
+ var value = hash.digest('hex');
+ return {
+   salt: salt,
+   passwordHash: value,
+ };
+};
+
 const getUserForToken = token => {
   try {
     const { id, sessionID } = jwt.verify(token, APP_SECRET);
-    const user = db.user.findById(id);
-
+    const user = db.User.findByPk(id);
     // TODO: a better way to do this with a database is to
     // join the Users table with the UserSessions table on
     // users.id = user_sessions.user_id where session_id = sessionID
@@ -147,7 +177,7 @@ const getUserForToken = token => {
 };
 
 const server = new ApolloServer({
-  cors: false,  
+  cors: false,
   typeDefs,
   resolvers,
   context: request => {

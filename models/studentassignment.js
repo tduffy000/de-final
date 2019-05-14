@@ -1,3 +1,4 @@
+// TODO: should remove the name field here
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const StudentAssignment = sequelize.define('StudentAssignment', {
