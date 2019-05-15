@@ -6,8 +6,20 @@ module.exports = {
     return queryInterface.bulkInsert('Assignments',
       [
         {
-          name: "Turing Completeness",
+          name: "Completeness",
           courseID: 1,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          name: "Complexity",
+          courseID: 1,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          name: "Sodering",
+          courseID: 2,
           createdAt: now,
           updatedAt: now
         }

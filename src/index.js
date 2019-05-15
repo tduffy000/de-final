@@ -7,8 +7,6 @@ import _ from "lodash";
 import resolvers from "./resolvers";
 import db from "../models";
 
-const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
-
 /**
   * SCHEMA
   */
@@ -73,6 +71,7 @@ const typeDefs = gql`
     last: String!
     email: String!
     role: Role!
+    passwordHash: String!
   }
 
   type Student implements User {
@@ -81,6 +80,7 @@ const typeDefs = gql`
     last: String!
     email: String!
     role: Role!
+    passwordHash: String!
     courses: [Course]
     assignments: [Assignment]
     gpa: Float!
@@ -92,6 +92,7 @@ const typeDefs = gql`
     last: String!
     email: String!
     role: Role!
+    passwordHash: String!
     courses: [Course]
   }
 
@@ -101,6 +102,7 @@ const typeDefs = gql`
     last: String!
     email: String!
     role: Role!
+    passwordHash: String!
   }
 
   type Course {
@@ -125,62 +127,6 @@ const typeDefs = gql`
     grade: String!
   }
 `;
-
-/**
- * USER LOGIN
- */
-
-/**
-* See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
-* generates random string of characters i.e salt
-* @function
-* @param {number} length - Length of the random string.
-*/
-const genRandomString = length => {
- return crypto
-   .randomBytes(Math.ceil(length / 2))
-   .toString('hex') /** convert to hexadecimal format */
-   .slice(0, length); /** return required number of characters */
-};
-
-const sha512 = (password, salt) => {
- var hash = crypto.createHmac(
-   'sha512',
-   salt,
- ); /** Hashing algorithm sha512 */
- hash.update(password);
- var value = hash.digest('hex');
- return {
-   salt: salt,
-   passwordHash: value,
- };
-};
-
-const getUserForToken = token => {
-  try {
-    const { id, sessionID } = jwt.verify(token, APP_SECRET);
-    const user = db.User.findByPk(id);
-    console.log(user);
-    // TODO: a better way to do this with a database is to
-    // join the Users table with the UserSessions table on
-    // users.id = user_sessions.user_id where session_id = sessionID
-    // this would get both the user and the sessionID in one query
-    const session = userSessions.getSession(sessionID);
-    if (!session) {
-      throw new AuthenticationError('Invalid Session');
-    }
-
-    return [user, session.id];
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      // invalidate the session if expired
-      const { sessionID } = jwt.decode(token);
-      userSessions.invalidateSession(sessionID);
-      throw new AuthenticationError('Session Expired');
-    }
-    throw new AuthenticationError('Bad Token');
-  }
-};
 
 /**
  * SERVER
