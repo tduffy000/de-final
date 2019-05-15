@@ -3,65 +3,14 @@ import { ApolloServer,
         ForbiddenError,
         AuthenticationError } from "apollo-server";
 import db from "../models";
-import jwt from "jsonwebtoken";
+import Login from "./login.js";
 
 /**
- * USER LOGIN
+ * OBJECT CLASSES
  */
+var login_manager = new Login();
+// TODO: add wrapper classes for User, Course, Assignment
 
-/**
-* See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
-* generates random string of characters i.e salt
-* @function
-* @param {number} length - Length of the random string.
-*/
-const genRandomString = length => {
- return crypto
-   .randomBytes(Math.ceil(length / 2))
-   .toString('hex') /** convert to hexadecimal format */
-   .slice(0, length); /** return required number of characters */
-};
-
-const sha512 = (password, salt) => {
- var hash = crypto.createHmac(
-   'sha512',
-   salt,
- ); /** Hashing algorithm sha512 */
- hash.update(password);
- var value = hash.digest('hex');
- return {
-   salt: salt,
-   passwordHash: value,
- };
-};
-
-const getUserForToken = token => {
-  try {
-    const { id, sessionID } = jwt.verify(token, APP_SECRET);
-    const user = db.User.findByPk(id);
-    console.log(user);
-    // TODO: a better way to do this with a database is to
-    // join the Users table with the UserSessions table on
-    // users.id = user_sessions.user_id where session_id = sessionID
-    // this would get both the user and the sessionID in one query
-    const session = userSessions.getSession(sessionID);
-    if (!session) {
-      throw new AuthenticationError('Invalid Session');
-    }
-
-    return [user, session.id];
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      // invalidate the session if expired
-      const { sessionID } = jwt.decode(token);
-      userSessions.invalidateSession(sessionID);
-      throw new AuthenticationError('Session Expired');
-    }
-    throw new AuthenticationError('Bad Token');
-  }
-};
-
-// TODO: make async (?)
 const makeResolver = (resolver, options) => {
   return (root, args, context, info) => {
     const o = {
@@ -73,20 +22,21 @@ const makeResolver = (resolver, options) => {
     const { roles } = o;
     let user = null;
     let sessionID = null;
-/*
+
+    // TODO: handle errors thrown by getUserFromToken()
     if ( requireUser ) {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      [user, sessionID] = getUserForToken(token);
-      if (!user) throw new AuthenticationError("Invalid Token/User");
+      [user, sessionID] = login_manager.getUserFromToken(token);
 
+      if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
       if (_.indexOf(roles, userRole) === -1) {
         throw new ForbiddenError("Operation not permitted for role: " + userRole);
       }
     }
-*/
+
     return resolver(
         root,
         args,
@@ -96,8 +46,11 @@ const makeResolver = (resolver, options) => {
   };
 };
 
+/**
+  * GRAPHQL RESOLVERS
+  */
+// TODO: loginUser needs to update user in context
 export default {
-    // TODO: ensure permissions are appropriate (found in context by way of currentUser)
     User: {
       __resolveType: (user, context, info) => user.role
     },
@@ -122,16 +75,14 @@ export default {
     },
     Mutation: {
       loginUser: makeResolver(
-        (root, args, context, info) => {
-          return users.login(args.email, args.password);
+        (root, { email, password }, context, info) => {
+          return login_manager.loginUser( email, password );
         },
         {requireUser: false}
       ),
       logoutUser: makeResolver(
-        (root, args, context, info) => {
-          const sessionID = context.sessionID;
-          userSessions.invalidateSession(sessionID);
-          return true;
+        (root, args, { user }, info) => {
+          return login_manager.logoutUser( user );
         }
       ),
       createUser: (root, { first, last, email, role }, { db }, info) => {
