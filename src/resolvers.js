@@ -194,6 +194,11 @@ export default {
           studentID: studentID,
           courseID: courseID,
           grade: grade
+        },{
+          where: {
+            studentID: studentID,
+            courseID: courseID
+          }
         })
       }
       // TODO: GPA can be calculated by a filter on Assignment grade table
