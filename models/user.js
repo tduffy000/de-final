@@ -1,4 +1,5 @@
 // TODO: email uniqueness check
+// TODO: how to make passwordHash secret?
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
@@ -19,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     role: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    passwordHash:{
       type: DataTypes.STRING,
       allowNull: false
     }

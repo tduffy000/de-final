@@ -7,8 +7,20 @@ module.exports = {
     return queryInterface.bulkInsert('Courses',
       [
         {
-          name: "Theory of Computation",
+          name: "Computation",
           professorID: 1,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          name: "Cryptography",
+          professorID: 1,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          name: "Analytical Engines",
+          professorID: 4,
           createdAt: now,
           updatedAt: now
         }
