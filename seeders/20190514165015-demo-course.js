@@ -1,14 +1,14 @@
 'use strict';
 
+// TODO: need to ensure that professorID maps to a professor
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    // TODO: change to 1
     const now = new Date();
     return queryInterface.bulkInsert('Courses',
       [
         {
-          courseName: "Theory of Computation",
-          professorID: 19,
+          name: "Theory of Computation",
+          professorID: 1,
           createdAt: now,
           updatedAt: now
         }

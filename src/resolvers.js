@@ -3,13 +3,70 @@ import { ApolloServer,
         ForbiddenError,
         AuthenticationError } from "apollo-server";
 import db from "../models";
+import jwt from "jsonwebtoken";
+
+/**
+ * USER LOGIN
+ */
+
+/**
+* See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
+* generates random string of characters i.e salt
+* @function
+* @param {number} length - Length of the random string.
+*/
+const genRandomString = length => {
+ return crypto
+   .randomBytes(Math.ceil(length / 2))
+   .toString('hex') /** convert to hexadecimal format */
+   .slice(0, length); /** return required number of characters */
+};
+
+const sha512 = (password, salt) => {
+ var hash = crypto.createHmac(
+   'sha512',
+   salt,
+ ); /** Hashing algorithm sha512 */
+ hash.update(password);
+ var value = hash.digest('hex');
+ return {
+   salt: salt,
+   passwordHash: value,
+ };
+};
+
+const getUserForToken = token => {
+  try {
+    const { id, sessionID } = jwt.verify(token, APP_SECRET);
+    const user = db.User.findByPk(id);
+    console.log(user);
+    // TODO: a better way to do this with a database is to
+    // join the Users table with the UserSessions table on
+    // users.id = user_sessions.user_id where session_id = sessionID
+    // this would get both the user and the sessionID in one query
+    const session = userSessions.getSession(sessionID);
+    if (!session) {
+      throw new AuthenticationError('Invalid Session');
+    }
+
+    return [user, session.id];
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      // invalidate the session if expired
+      const { sessionID } = jwt.decode(token);
+      userSessions.invalidateSession(sessionID);
+      throw new AuthenticationError('Session Expired');
+    }
+    throw new AuthenticationError('Bad Token');
+  }
+};
 
 // TODO: make async (?)
 const makeResolver = (resolver, options) => {
   return (root, args, context, info) => {
     const o = {
       requireUser: true,
-      roles: ["Admin", "Student", "Faculty"],
+      roles: ["Admin", "Student", "Professor"],
       ...options
     }
     const { requireUser } = o;
@@ -30,12 +87,10 @@ const makeResolver = (resolver, options) => {
       }
     }
 */
-    // TODO: update context to include login credentials (right now in DB testing phase)
     return resolver(
         root,
         args,
-        // {...context, user: user, sessionID: sessionID, db: db},
-        {...context, db: db},
+        {...context, user: user, sessionID: sessionID, db: db},
         info
     );
   };
@@ -47,7 +102,7 @@ export default {
       __resolveType: (user, context, info) => user.role
     },
     Query: {
-      currentUser: makeResolver( (root, args, { db }, info) => context.user),
+      currentUser: makeResolver( (root, args, { db, user }, info) => user),
       users: makeResolver((root, args, { db }, info) => {
         return db.User.findAll();
       }),
@@ -81,16 +136,16 @@ export default {
       ),
       createUser: (root, { first, last, email, role }, { db }, info) => {
         db.User.create({
-          firstName: first,
-          lastName: last,
+          first: first,
+          last: last,
           email: email,
           role: role
         })
       },
       updateUser: (root, { id, first, last, email, role }, { db }, info) => {
         db.User.update({
-          firstName: first,
-          lastName: last,
+          first: first,
+          last: last,
           email: email,
           role: role
         },{
@@ -99,7 +154,7 @@ export default {
       },
       createCourse: (root, { name, professorID }, { db }, info) => {
         db.Course.create({
-          courseName: name,
+          name: name,
           professorID: professorID
         })
       },
@@ -128,7 +183,7 @@ export default {
       },
       createAssignment: (root, { name, courseID }, context, info) => {
         db.Assignment.create({
-          assignmentName: name,
+          name: name,
           courseID: courseID
         })
       },

@@ -6,8 +6,8 @@ module.exports = {
     return queryInterface.bulkInsert('Assignments',
       [
         {
-          assignmentName: "Turing Completeness",
-          courseID: 2,
+          name: "Turing Completeness",
+          courseID: 1,
           createdAt: now,
           updatedAt: now
         }

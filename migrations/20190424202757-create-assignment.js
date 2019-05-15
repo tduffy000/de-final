@@ -8,8 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      assignmentName: {
-        type: Sequelize.STRING
+      name: {
+        type: Sequelize.STRING,
+        unique: true
       },
       courseID: {
         type: Sequelize.STRING

@@ -10,14 +10,16 @@ module.exports = {
          last: 'Turing',
 		     email: 'poison-apple@google.co.uk',
 		     role: 'Professor',
+         passwordHash: 'abcd',
          createdAt: now,
 		     updatedAt: now
 	      },
 	      {
          first: 'Tyrone',
-		     lastName: 'Slopthrop',
+		     last: 'Slopthrop',
 		     email: 'tyslop@thezone.com',
 		     role: 'Student',
+         passwordHash: 'abcd',
 		     createdAt: now,
 		     updatedAt: now
 	      },
@@ -26,9 +28,10 @@ module.exports = {
   	     last: 'Mexico',
   	     email: 'roger@whitevisitation.gov',
   	     role: 'Admin',
+         passwordHash: 'abcd',
   	     createdAt: now,
   	     updatedAt:now
-	      }
+        },
 	    ],
 	    {},
     );

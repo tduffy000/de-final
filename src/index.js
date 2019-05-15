@@ -9,8 +9,9 @@ import db from "../models";
 
 const APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
 
-// Construct a schema, using GraphQL schema language
-// TODO: update role implementations to use role-specific objects
+/**
+  * SCHEMA
+  */
 const typeDefs = gql`
   type Query {
     users: [User]
@@ -29,7 +30,7 @@ const typeDefs = gql`
     updateUser(id: ID!, user: UserInput): User
 
     # Only Faculty can create/update and manage courses
-    createCourse(name: String!, facultyID: ID!): Course
+    createCourse(name: String!, professorID: ID!): Course
     deleteCourse(courseID: ID!): Course
     addStudentToCourse(courseID: ID!, studentID: ID!): Course
     removeStudentFromCourse(courseID: ID!, studentID: ID!): Course
@@ -53,8 +54,8 @@ const typeDefs = gql`
   }
 
   input UserInput {
-    firstName: String!
-    lastName: String!
+    first: String!
+    last: String!
     email: String!
     role: Role
     password: String
@@ -68,16 +69,16 @@ const typeDefs = gql`
 
   interface User {
     id: ID!
-    firstName: String!
-    lastName: String!
+    first: String!
+    last: String!
     email: String!
     role: Role!
   }
 
   type Student implements User {
     id: ID!
-    firstName: String!
-    lastName: String!
+    first: String!
+    last: String!
     email: String!
     role: Role!
     courses: [Course]
@@ -87,8 +88,8 @@ const typeDefs = gql`
 
   type Professor implements User {
     id: ID!
-    firstName: String!
-    lastName: String!
+    first: String!
+    last: String!
     email: String!
     role: Role!
     courses: [Course]
@@ -96,15 +97,15 @@ const typeDefs = gql`
 
   type Admin implements User {
     id: ID!
-    firstName: String!
-    lastName: String!
+    first: String!
+    last: String!
     email: String!
     role: Role!
   }
 
   type Course {
     id: ID!
-    courseName: String!
+    name: String!
     professor: Professor
     students: [Student]
     assignments: [Assignment]
@@ -112,7 +113,7 @@ const typeDefs = gql`
 
   type Assignment {
     id: ID!
-    assignmentName: String!
+    name: String!
     course: Course!
     grades: [AssignmentGrade]
   }
@@ -124,6 +125,10 @@ const typeDefs = gql`
     grade: String!
   }
 `;
+
+/**
+ * USER LOGIN
+ */
 
 /**
 * See https://ciphertrick.com/2016/01/18/salt-hash-passwords-using-nodejs-crypto/
@@ -155,6 +160,7 @@ const getUserForToken = token => {
   try {
     const { id, sessionID } = jwt.verify(token, APP_SECRET);
     const user = db.User.findByPk(id);
+    console.log(user);
     // TODO: a better way to do this with a database is to
     // join the Users table with the UserSessions table on
     // users.id = user_sessions.user_id where session_id = sessionID
@@ -176,6 +182,9 @@ const getUserForToken = token => {
   }
 };
 
+/**
+ * SERVER
+ */
 const server = new ApolloServer({
   cors: false,
   typeDefs,

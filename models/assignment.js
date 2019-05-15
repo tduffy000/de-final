@@ -1,7 +1,7 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const Assignment = sequelize.define("Assignment", {
-    assignmentName: DataTypes.STRING,
+    name: DataTypes.STRING,
     courseID: DataTypes.STRING
   }, {});
   Assignment.associate = function(models) {
