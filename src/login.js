@@ -64,10 +64,10 @@ export default class Login {
        * this would get both the user and the sessionID in one query
        */
       var user = await db.User.findByPk(id).then((r) => {
-                                JSON.parse(JSON.stringify(r))
+                                return JSON.parse(JSON.stringify(r));
                                });
       var session = await db.UserSession.findByPk(sessionID).then((r) => {
-                                          JSON.parse(JSON.stringify(r))
+                                          return JSON.parse(JSON.stringify(r))
                                          });
       if (!session) {
         throw new AuthenticationError('Invalid Session');
@@ -77,7 +77,7 @@ export default class Login {
       if (error instanceof jwt.TokenExpiredError) {
         // token expired => invalidate session
         const { sessionID } = jwt.decode(token);
-        this.destroyUserSession( sessionID );
+        this.destroyUserSession( sessionID ); // TODO: test
         throw new AuthenticationError('Session Expired')
       }
       // bad/null token => disallow access
@@ -129,6 +129,7 @@ export default class Login {
     }
 
     // hash the password with the user salt
+    // @see: https://en.wikipedia.org/wiki/Salt_(cryptography)
     const hashedPassword = this.sha512(password, user.salt).passwordHash;
 
     // compare the hashed password against the one in the user record
@@ -136,6 +137,7 @@ export default class Login {
       throw new AuthenticationError("Bad Login or Password");
     }
 
+    // TODO: check if user already has a session (?)/ how do we pass back the token then?
     // create userSession & token
     let t = await this.generateToken(user);
     return {

@@ -12,7 +12,7 @@ var login_manager = new Login();
 // TODO: add wrapper classes for User, Course, Assignment
 
 const makeResolver = (resolver, options) => {
-  return (root, args, context, info) => {
+  return async (root, args, context, info) => {
     const o = {
       requireUser: true,
       roles: ["Admin", "Student", "Professor"],
@@ -27,14 +27,19 @@ const makeResolver = (resolver, options) => {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      [user, sessionID] = login_manager.getUserFromToken(token).catch((e) => {
-        console.error(e);
-      });
+      [user, sessionID] = await login_manager.getUserFromToken(token)
+                                             .then((r) => {
+                                               return r;
+                                             }).catch((e) => {
+                                               console.error(e);
+                                             });
 
       if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
-      if (_.indexOf(roles, userRole) === -1) {
-        throw new ForbiddenError("Operation not permitted for role: " + userRole);
+
+      //  THIS STUB REMOVED FOR TEST SUITE : for role: " + userRole
+      if (roles.indexOf(userRole) === -1) {
+        throw new ForbiddenError("Operation not permitted");
       }
     }
 
@@ -51,6 +56,7 @@ const makeResolver = (resolver, options) => {
   * GRAPHQL RESOLVERS
   */
 // TODO: loginUser needs to update user in context
+// TODO: confirm resolver permissions 
 export default {
     User: {
       __resolveType: (user, context, info) => user.role
@@ -93,7 +99,8 @@ export default {
             email: email,
             role: role
           })
-        }
+        },
+        {roles: ["Admin"]}
       ),
       updateUser: makeResolver(
         (root, { id, name, email, role }, context, info) => {
@@ -104,7 +111,8 @@ export default {
           },{
             where: {id: id}
           })
-        }
+        },
+        {roles: ["Admin"]}
       ),
       createCourse: makeResolver(
         (root, { name, professorID }, context, info) => {
@@ -112,14 +120,16 @@ export default {
             name: name,
             professorID: professorID
           })
-        }
+        },
+        {roles: ["Admin", "Professor"]}
       ),
       deleteCourse: makeResolver(
         (root, { id }, context) => {
           return context.db.Course.destroy({
             where: {id: id}
           })
-        }
+        },
+        {roles: ["Admin", "Professor"]}
       ),
       addStudentToCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
@@ -129,7 +139,8 @@ export default {
               userID: userID
             }
           })
-        }
+        },
+        {roles: ["Admin", "Professor"]}
       ),
       removeStudentFromCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
@@ -139,7 +150,8 @@ export default {
               userID: userID
             }
           })
-        }
+        },
+        {roles: ["Admin", "Professor"]}
       ),
       createAssignment: makeResolver(
         (root, { name, courseID }, context, info) => {
@@ -147,7 +159,8 @@ export default {
             name: name,
             courseID: courseID
           })
-        }
+        },
+        {roles: ["Professor"]}
       ),
       createAssignmentGrade: makeResolver(
         (root, { assignmentID, studentID, courseID, grade }, context, info) => {
@@ -162,7 +175,8 @@ export default {
               courseID: courseID
             }
           })
-        }
+        },
+        {roles: ["Professor"]}
       )
       // TODO: GPA can be calculated by a filter on Assignment grade table
     }
