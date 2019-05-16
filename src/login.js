@@ -8,7 +8,6 @@ export default class Login {
 
   // TODO: remove hard-coded testing variables
   constructor() {
-    this.TEST_SALT = 'fff0718ca599b0a9';
     this.APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
   }
 
@@ -22,12 +21,12 @@ export default class Login {
   sha512(password, salt) {
     var hash = crypto.createHmac(
      'sha512',
-     this.TEST_SALT,
+     salt,
     ); /** Hashing algorithm sha512 */
     hash.update(password);
     var value = hash.digest('hex');
     return {
-     salt: this.TEST_SALT,
+     salt: salt,
      passwordHash: value,
     };
   };
@@ -122,7 +121,6 @@ export default class Login {
 
   async loginUser(emailAddress, password) {
     // Get user from db by emailAddress
-    this.genSaltHashPassword(password);
     const user = await this.findUserByEmail(emailAddress);
     if(!user) {
       throw new AuthenticationError("Bad Login or Password");

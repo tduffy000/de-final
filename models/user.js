@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
     passwordHash:{
       type: DataTypes.STRING,
       allowNull: false
+    },
+    salt:{
+      type: DataTypes.STRING,
+      allowNull: false
     }
   }, {});
   User.associate = function(models) {

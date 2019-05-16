@@ -15,6 +15,7 @@ module.exports = {
 		     email: 'poison-apple@google.co.uk',
 		     role: 'Professor',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
+         salt: 'fff0718ca599b0a9',
          createdAt: now,
 		     updatedAt: now
 	      },
@@ -24,7 +25,8 @@ module.exports = {
 		     email: 'tyslop@thezone.com',
 		     role: 'Student',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
-		     createdAt: now,
+         salt: 'fff0718ca599b0a9',
+         createdAt: now,
 		     updatedAt: now
 	      },
 	      {
@@ -33,7 +35,8 @@ module.exports = {
   	     email: 'roger@whitevisitation.gov',
   	     role: 'Admin',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
-  	     createdAt: now,
+         salt: 'fff0718ca599b0a9',
+         createdAt: now,
   	     updatedAt: now
         },
         {
@@ -42,6 +45,7 @@ module.exports = {
          email: 'charlie@cambridge.edu',
          role: 'Professor',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
+         salt: 'fff0718ca599b0a9',
          createdAt: now,
          updatedAt: now
         },
@@ -51,6 +55,7 @@ module.exports = {
          email: 'vassy@spetsnaz.ru',
          role: 'Admin',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
+         salt: 'fff0718ca599b0a9',
          createdAt: now,
          updatedAt: now
        },
@@ -60,6 +65,7 @@ module.exports = {
          email: 'paingal@gmail.com',
          role: 'Student',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
+         salt: 'fff0718ca599b0a9',
          createdAt: now,
          updatedAt: now
        }
