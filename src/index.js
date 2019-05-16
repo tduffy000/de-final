@@ -52,8 +52,7 @@ const typeDefs = gql`
   }
 
   input UserInput {
-    first: String!
-    last: String!
+    name: String!
     email: String!
     role: Role
     password: String
@@ -67,8 +66,7 @@ const typeDefs = gql`
 
   interface User {
     id: ID!
-    first: String!
-    last: String!
+    name: String!
     email: String!
     role: Role!
     passwordHash: String!
@@ -76,8 +74,7 @@ const typeDefs = gql`
 
   type Student implements User {
     id: ID!
-    first: String!
-    last: String!
+    name: String!
     email: String!
     role: Role!
     passwordHash: String!
@@ -88,8 +85,7 @@ const typeDefs = gql`
 
   type Professor implements User {
     id: ID!
-    first: String!
-    last: String!
+    name: String!
     email: String!
     role: Role!
     passwordHash: String!
@@ -98,8 +94,7 @@ const typeDefs = gql`
 
   type Admin implements User {
     id: ID!
-    first: String!
-    last: String!
+    name: String!
     email: String!
     role: Role!
     passwordHash: String!

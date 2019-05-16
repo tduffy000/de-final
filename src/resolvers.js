@@ -23,12 +23,13 @@ const makeResolver = (resolver, options) => {
     let user = null;
     let sessionID = null;
 
-    // TODO: handle errors thrown by getUserFromToken()
     if ( requireUser ) {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      [user, sessionID] = login_manager.getUserFromToken(token);
+      [user, sessionID] = login_manager.getUserFromToken(token).catch((e) => {
+        console.error(e);
+      });
 
       if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
@@ -55,22 +56,22 @@ export default {
       __resolveType: (user, context, info) => user.role
     },
     Query: {
-      currentUser: makeResolver( (root, args, { db, user }, info) => user),
-      users: makeResolver((root, args, { db }, info) => {
-        return db.User.findAll();
+      currentUser: makeResolver( (root, args, context, info) => context.user),
+      users: makeResolver((root, args, context, info) => {
+        return context.db.User.findAll();
       }),
-      students: makeResolver((root, args, { db }, info) => {
-        return db.User.findAll({
+      students: makeResolver((root, args, context, info) => {
+        return context.db.User.findAll({
           where: {role: "Student"}
         });
       }),
-      faculty: makeResolver((root, args, { db }, info) => {
-        return db.User.findAll({
+      faculty: makeResolver((root, args, context, info) => {
+        return context.db.User.findAll({
           where: {role: "Professor"}
         });
       }),
-      courses: makeResolver((root, args, { db }, info) => {
-        return db.Course.findAll()
+      courses: makeResolver((root, args, context, info) => {
+        return context.db.Course.findAll()
       })
     },
     Mutation: {
@@ -81,77 +82,88 @@ export default {
         {requireUser: false}
       ),
       logoutUser: makeResolver(
-        (root, args, { user }, info) => {
-          return login_manager.logoutUser( user );
+        (root, args, context, info) => {
+          return login_manager.logoutUser( context.user );
         }
       ),
-      createUser: (root, { first, last, email, role }, { db }, info) => {
-        db.User.create({
-          first: first,
-          last: last,
-          email: email,
-          role: role
-        })
-      },
-      updateUser: (root, { id, first, last, email, role }, { db }, info) => {
-        db.User.update({
-          first: first,
-          last: last,
-          email: email,
-          role: role
-        },{
-          where: {id: id}
-        })
-      },
-      createCourse: (root, { name, professorID }, { db }, info) => {
-        db.Course.create({
-          name: name,
-          professorID: professorID
-        })
-      },
-      deleteCourse: (root, { id }, context) => {
-        db.Course.destroy({
-          where: {id: id}
-        })
-      },
-      addStudentToCourse: (root, { courseID, userID }, { db }, context) => {
-        // StudentCourse table
-        db.StudentCourse.findOrCreate({
-          where: {
-            courseID: courseID,
-            userID: userID
-          }
-        })
-      },
-      removeStudentFromCourse: (root, { courseID, userID }, { db }, info) => {
-        // StudentCourse table
-        db.StudentCourse.destroy({
-          where: {
-            courseID: courseID,
-            userID: userID
-          }
-        })
-      },
-      createAssignment: (root, { name, courseID }, context, info) => {
-        db.Assignment.create({
-          name: name,
-          courseID: courseID
-        })
-      },
-      createAssignmentGrade: (root, { assignmentID, studentID, courseID, grade }, { db }, info) => {
-        // AssignmentGrade table
-        db.StudentAssignment.update({
-          assignmentID: assignmentID,
-          studentID: studentID,
-          courseID: courseID,
-          grade: grade
-        },{
-          where: {
-            studentID: studentID,
+      createUser: makeResolver(
+        (root, { name, email, role }, context, info) => {
+          return context.db.User.create({
+            name: name,
+            email: email,
+            role: role
+          })
+        }
+      ),
+      updateUser: makeResolver(
+        (root, { id, name, email, role }, context, info) => {
+          return context.db.User.update({
+            name: name,
+            email: email,
+            role: role
+          },{
+            where: {id: id}
+          })
+        }
+      ),
+      createCourse: makeResolver(
+        (root, { name, professorID }, context, info) => {
+          return context.db.Course.create({
+            name: name,
+            professorID: professorID
+          })
+        }
+      ),
+      deleteCourse: makeResolver(
+        (root, { id }, context) => {
+          return context.db.Course.destroy({
+            where: {id: id}
+          })
+        }
+      ),
+      addStudentToCourse: makeResolver(
+        (root, { courseID, userID }, context, info) => {
+          return context.db.StudentCourse.findOrCreate({
+            where: {
+              courseID: courseID,
+              userID: userID
+            }
+          })
+        }
+      ),
+      removeStudentFromCourse: makeResolver(
+        (root, { courseID, userID }, context, info) => {
+          return context.db.StudentCourse.destroy({
+            where: {
+              courseID: courseID,
+              userID: userID
+            }
+          })
+        }
+      ),
+      createAssignment: makeResolver(
+        (root, { name, courseID }, context, info) => {
+          return context.db.Assignment.create({
+            name: name,
             courseID: courseID
-          }
-        })
-      }
+          })
+        }
+      ),
+      createAssignmentGrade: makeResolver(
+        (root, { assignmentID, studentID, courseID, grade }, context, info) => {
+          return context.db.StudentAssignment.update({
+            assignmentID: assignmentID,
+            studentID: studentID,
+            courseID: courseID,
+            grade: grade
+          },{
+            where: {
+              studentID: studentID,
+              courseID: courseID
+            }
+          })
+        }
+      )
       // TODO: GPA can be calculated by a filter on Assignment grade table
     }
 };

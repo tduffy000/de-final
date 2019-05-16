@@ -75,10 +75,12 @@ export default class Login {
       return [user, session.id];
     } catch(error) {
       if (error instanceof jwt.TokenExpiredError) {
+        // token expired => invalidate session
         const { sessionID } = jwt.decode(token);
-        // TODO: invalidateSession
+        this.destroyUserSession( sessionID );
         throw new AuthenticationError('Session Expired')
       }
+      // bad/null token => disallow access
       throw new AuthenticationError('Bad Token');
     }
   }

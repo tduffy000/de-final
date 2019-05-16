@@ -10,8 +10,7 @@ module.exports = {
     return queryInterface.bulkInsert('Users',
 	   [
        {
-         first: 'Alan',
-         last: 'Turing',
+         name: 'Alan Turing',
 		     email: 'poison-apple@google.co.uk',
 		     role: 'Professor',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
@@ -20,8 +19,7 @@ module.exports = {
 		     updatedAt: now
 	      },
 	      {
-         first: 'Tyrone',
-		     last: 'Slopthrop',
+         name: 'Tyrone Slopthrop',
 		     email: 'tyslop@thezone.com',
 		     role: 'Student',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
@@ -30,8 +28,7 @@ module.exports = {
 		     updatedAt: now
 	      },
 	      {
-  	     first: 'Roger',
-  	     last: 'Mexico',
+  	     name: 'Roger Mexico',
   	     email: 'roger@whitevisitation.gov',
   	     role: 'Admin',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
@@ -40,8 +37,7 @@ module.exports = {
   	     updatedAt: now
         },
         {
-         first: 'Charles',
-         last: 'Babbage',
+         name: 'Charles Babbage',
          email: 'charlie@cambridge.edu',
          role: 'Professor',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
@@ -50,8 +46,7 @@ module.exports = {
          updatedAt: now
         },
         {
-         first: 'Vaslav',
-         last: 'Tchitcherine',
+         name: 'Vaslav Tchitcherine',
          email: 'vassy@spetsnaz.ru',
          role: 'Admin',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
@@ -60,8 +55,7 @@ module.exports = {
          updatedAt: now
        },
        {
-         first: 'Margherita',
-         last: 'Erdmann',
+         name: 'Margherita Erdmann',
          email: 'paingal@gmail.com',
          role: 'Student',
          passwordHash: '85049421b741244d37d7688ff85e24d66e819647b119cf2aaae55426692aeb46e12601aff4cd60591407a439863ed1d77048dddea5e66d5d2b0fb562f6b92d64',
