@@ -39,7 +39,7 @@ const makeResolver = (resolver, options) => {
 
       //  THIS STUB REMOVED FOR TEST SUITE : for role: " + userRole
       if (roles.indexOf(userRole) === -1) {
-        throw new ForbiddenError("Operation not permitted");
+        throw new ForbiddenError("Operation Not Permitted");
       }
     }
 
@@ -56,7 +56,7 @@ const makeResolver = (resolver, options) => {
   * GRAPHQL RESOLVERS
   */
 // TODO: loginUser needs to update user in context
-// TODO: confirm resolver permissions 
+// TODO: confirm resolver permissions
 export default {
     User: {
       __resolveType: (user, context, info) => user.role

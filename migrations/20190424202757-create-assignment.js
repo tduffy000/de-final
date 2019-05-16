@@ -13,7 +13,7 @@ module.exports = {
         unique: true
       },
       courseID: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

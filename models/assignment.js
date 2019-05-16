@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Assignment = sequelize.define("Assignment", {
     name: DataTypes.STRING,
-    courseID: DataTypes.STRING
+    courseID: DataTypes.INTEGER
   }, {});
   Assignment.associate = function(models) {
     Assignment.belongsTo(models.Course, {
