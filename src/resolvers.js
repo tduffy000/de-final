@@ -28,13 +28,10 @@ const makeResolver = (resolver, options) => {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      // TODO: how can we throw these so they get caught by the test suite?
       [user, sessionID] = await login_manager.getUserFromToken(token)
                                              .then((r) => {
                                                return r;
-                                             }).catch((e) => {
-                                               console.error(e);
-                                             });
+                                             })
 
       if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
