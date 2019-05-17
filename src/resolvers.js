@@ -27,6 +27,7 @@ const makeResolver = (resolver, options) => {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
+      // TODO: how can we throw these so they get caught by the test suite?
       [user, sessionID] = await login_manager.getUserFromToken(token)
                                              .then((r) => {
                                                return r;
@@ -55,7 +56,6 @@ const makeResolver = (resolver, options) => {
 /**
   * GRAPHQL RESOLVERS
   */
-// TODO: loginUser needs to update user in context
 // TODO: confirm resolver permissions
 export default {
     User: {
@@ -93,11 +93,14 @@ export default {
         }
       ),
       createUser: makeResolver(
-        (root, { name, email, role }, context, info) => {
+        (root, { user }, context, info) => {
+          var passwordData = login_manager.genSaltHashPassword( user.password );
           return context.db.User.create({
-            name: name,
-            email: email,
-            role: role
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            passwordHash: passwordData.passwordHash,
+            salt: passwordData.salt
           })
         },
         {roles: ["Admin"]}
