@@ -4,6 +4,7 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import db from "../models";
 import Login from "./login.js";
+import regeneratorRuntime from "regenerator-runtime";
 
 /**
  * OBJECT CLASSES
@@ -106,11 +107,11 @@ export default {
         {roles: ["Admin"]}
       ),
       updateUser: makeResolver(
-        (root, { id, name, email, role }, context, info) => {
+        (root, { user }, context, info) => {
           return context.db.User.update({
-            name: name,
-            email: email,
-            role: role
+            name: user.name,
+            email: user.email,
+            role: user.role
           },{
             where: {id: id}
           })

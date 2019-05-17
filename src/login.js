@@ -3,6 +3,7 @@ import { ForbiddenError,
 import db from "../models"; // TODO: should the db get passed into the constructor?
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import regeneratorRuntime from "regenerator-runtime";
 
 export default class Login {
 
@@ -46,7 +47,8 @@ export default class Login {
     });
   };
 
-  destroyUserSession(userID) {
+  // TODO: what to return if there's nothing to destroy?
+  async destroyUserSession(userID) {
     return db.UserSession.destroy({
       where: {userID: userID}
     }).then( (r) => {
@@ -137,7 +139,7 @@ export default class Login {
       throw new AuthenticationError("Bad Login or Password");
     }
 
-    // TODO: check if user already has a session (?)/ how do we pass back the token then?
+    // TODO: check if user already has a session (?)
     // create userSession & token
     let t = await this.generateToken(user);
     return {
