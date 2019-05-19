@@ -4,18 +4,23 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import db from "../models";
 import Login from "./login.js";
-import regeneratorRuntime from "regenerator-runtime";
+import Users from "./user.js"
+import Courses from "./course.js"
+import Assignment from "./assignment.js"
 
 /**
  * OBJECT CLASSES
  */
 var login_manager = new Login();
+var user_manager  = new Users(db);
+var course_manager = new Courses(db);
+var assingment_manager = new Assignment(db)
 // TODO: add wrapper classes for User, Course, Assignment
 
 const makeResolver = (resolver, options) => {
   return async (root, args, context, info) => {
     const o = {
-      requireUser: true,
+      requireUser: false,
       roles: ["Admin", "Student", "Professor"],
       ...options
     }
@@ -31,7 +36,9 @@ const makeResolver = (resolver, options) => {
       [user, sessionID] = await login_manager.getUserFromToken(token)
                                              .then((r) => {
                                                return r;
-                                             })
+                                             }).catch((e) => {
+                                               console.error(e);
+                                             });
 
       if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
@@ -54,6 +61,7 @@ const makeResolver = (resolver, options) => {
 /**
   * GRAPHQL RESOLVERS
   */
+// TODO: loginUser needs to update user in context
 // TODO: confirm resolver permissions
 export default {
     User: {
@@ -62,20 +70,17 @@ export default {
     Query: {
       currentUser: makeResolver( (root, args, context, info) => context.user),
       users: makeResolver((root, args, context, info) => {
-        return context.db.User.findAll();
+        return user_manager.getUsers();
       }),
       students: makeResolver((root, args, context, info) => {
-        return context.db.User.findAll({
-          where: {role: "Student"}
-        });
+        return user_manager.getRole("Student");
       }),
       faculty: makeResolver((root, args, context, info) => {
-        return context.db.User.findAll({
-          where: {role: "Professor"}
-        });
+        return user_manager.getRole("Professor")
+
       }),
       courses: makeResolver((root, args, context, info) => {
-        return context.db.Course.findAll()
+        return course_manager.getCourses()
       })
     },
     Mutation: {
@@ -91,42 +96,26 @@ export default {
         }
       ),
       createUser: makeResolver(
-        (root, { user }, context, info) => {
-          var passwordData = login_manager.genSaltHashPassword( user.password );
-          return context.db.User.create({
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            passwordHash: passwordData.passwordHash,
-            salt: passwordData.salt
-          })
-        },
-        {roles: ["Admin"]}
+        (root, { name, email, role }, context, info) => {
+          return user_manager.createUser(name, email, role),
+          {roles: ["Admin"]}
+        }
       ),
       updateUser: makeResolver(
-        (root, { user }, context, info) => {
-          return context.db.User.update({
-            name: user.name,
-            email: user.email,
-            role: user.role
-          },{
-            where: {id: id}
-          })
+        (root, { id, name, email, role }, context, info) => {
+          return user_manager.updateUser(name, email, role, id)
         },
-        {roles: ["Admin"]}
+          {roles: ["Admin"]}
       ),
       createCourse: makeResolver(
         (root, { name, professorID }, context, info) => {
-          return context.db.Course.create({
-            name: name,
-            professorID: professorID
-          })
+          return course_manager.createCourse(name, professorID)
         },
-        {roles: ["Admin", "Professor"]}
+          {roles: ["Admin", "Professor"]};
       ),
       deleteCourse: makeResolver(
         (root, { id }, context) => {
-          return context.db.Course.destroy({
+          return course_manager.db.Course.destroy({
             where: {id: id}
           })
         },
@@ -134,48 +123,32 @@ export default {
       ),
       addStudentToCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
-          return context.db.StudentCourse.findOrCreate({
-            where: {
-              courseID: courseID,
-              userID: userID
-            }
-          })
+          return course_manager.addStudentToCourse(courseID, userID)
         },
         {roles: ["Admin", "Professor"]}
       ),
       removeStudentFromCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
-          return context.db.StudentCourse.destroy({
-            where: {
-              courseID: courseID,
-              userID: userID
-            }
-          })
+          return course_manager.removeStudentFromCourse(courseID, userID)
         },
         {roles: ["Admin", "Professor"]}
       ),
       createAssignment: makeResolver(
         (root, { name, courseID }, context, info) => {
-          return context.db.Assignment.create({
-            name: name,
-            courseID: courseID
-          })
+          return assingment_manager.createAssingment(name, courseID)
+        },
+        {roles: ["Professor"]}
+      ),
+      removeAssignment: makeResolver(
+        (root, { name, courseID }, context, info) => {
+          return assingment_manager.removeAssingment(name, courseID)
         },
         {roles: ["Professor"]}
       ),
       createAssignmentGrade: makeResolver(
         (root, { assignmentID, studentID, courseID, grade }, context, info) => {
-          return context.db.StudentAssignment.update({
-            assignmentID: assignmentID,
-            studentID: studentID,
-            courseID: courseID,
-            grade: grade
-          },{
-            where: {
-              studentID: studentID,
-              courseID: courseID
-            }
-          })
+          return assingment_manager.createAssignmentGrade(assignmentID,
+            studentID, courseID, grade)
         },
         {roles: ["Professor"]}
       )
