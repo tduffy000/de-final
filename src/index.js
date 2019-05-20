@@ -37,6 +37,7 @@ const typeDefs = gql`
     createAssignment(courseID: ID!, name: String!): Assignment
     createAssignmentGrade(
       assignmentID: ID!
+      courseID: ID!
       studentID: ID!
       grade: Float!
     ): AssignmentGrade

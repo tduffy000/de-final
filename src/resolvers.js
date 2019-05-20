@@ -138,8 +138,9 @@ export default {
       ),
       createAssignmentGrade: makeResolver(
         (root, { assignmentID, studentID, courseID, grade }, context, info) => {
-          return assignment_manager.createAssignmentGrade( assignmentID,
-            studentID, courseID, grade );
+          return assignment_manager.createAssignmentGrade(
+            assignmentID, studentID, courseID, grade
+          );
         },
         {roles: ["Professor"]}
       )

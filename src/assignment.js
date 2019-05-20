@@ -11,30 +11,33 @@ export default class Assignment {
     return a;
   }
 
-  createAssignment( name, courseID ) {
-    // TODO: populate StudentAssignment for all students enrolled in the class
-    return this.DB.Assignment.create({
+  async createAssignment( name, courseID ) {
+    // create assignment in table
+    var a = await this.DB.Assignment.create({
       name: name,
       courseID: courseID
     });
+    // populate StudentAssignment for all students in the course (using StudentCourse table)
+    var enrolled = await this.DB.StudentCourse.findAll({
+      where: {courseID: courseID}
+    })
+    enrolled.forEach( async (v) => {
+      await this.DB.StudentAssignment.create({
+        courseID: v.courseID,
+        userID: v.userID,
+        assignmentID: a.id
+      });
+    })
+    return a;
   };
 
-  removeAssignment( name, courseID ) {
-    // TODO: de-populate StudentAssignment for all students enrolled in the class
-    return this.DB.Assignment.destroy({
-      name: name,
-      courseID: courseID
-    });
-  };
-
-  // TODO
-  createAssignmentGrade( assignmentID, userID, courseID, grade ) {
+  createAssignmentGrade( assignmentID, studentID, courseID, grade ) {
     return this.DB.StudentAssignment.update({
       grade: grade
     },{
       where: {
         assignmentID: assignmentID,
-        userID: userID,
+        userID: studentID,
         courseID: courseID
       }
     })
