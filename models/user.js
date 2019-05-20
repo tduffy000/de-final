@@ -1,5 +1,3 @@
-// TODO: email uniqueness check
-// TODO: how to make passwordHash secret?
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
@@ -10,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      // TODO: how to handle bubbling up this exception (i.e. invalid e-mail)?
       validate: {
         isEmail: true
       }
@@ -31,7 +28,17 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function(models) {
     User.belongsToMany(models.Course, {
       through: models.StudentCourse,
-      foreignKey: "userID"
+      foreignKey: "userID",
+      as: "courses"
+    });
+    User.hasMany(models.Course, {
+      foreignKey: "professorID",
+      as: "teaching"
+    });
+    User.belongsToMany(models.Assignment, {
+      through: models.StudentAssignment,
+      foreignKey: "userID",
+      as: "assignments"
     });
     User.hasOne(models.UserSession, {
       foreignKey: "userID"

@@ -1,3 +1,4 @@
+import regeneratorRuntime from "regenerator-runtime";
 
 export default class Assignment {
 
@@ -5,7 +6,13 @@ export default class Assignment {
     this.DB = db;
   };
 
+  async get( id ) {
+    var a = await this.DB.Assignment.findByPk(id);
+    return a;
+  }
+
   createAssignment( name, courseID ) {
+    // TODO: populate StudentAssignment for all students enrolled in the class
     return this.DB.Assignment.create({
       name: name,
       courseID: courseID
@@ -13,6 +20,7 @@ export default class Assignment {
   };
 
   removeAssignment( name, courseID ) {
+    // TODO: de-populate StudentAssignment for all students enrolled in the class
     return this.DB.Assignment.destroy({
       name: name,
       courseID: courseID
@@ -20,13 +28,13 @@ export default class Assignment {
   };
 
   // TODO
-  createAssignmentGrade( assignmentID, studentID, courseID, grade ) {
-    return this.grade.update({
+  createAssignmentGrade( assignmentID, userID, courseID, grade ) {
+    return this.DB.StudentAssignment.update({
       grade: grade
     },{
       where: {
         assignmentID: assignmentID,
-        studentID: studentID,
+        userID: userID,
         courseID: courseID
       }
     })

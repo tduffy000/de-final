@@ -6,9 +6,10 @@ import regeneratorRuntime from "regenerator-runtime";
 
 import db from "../models";
 import Login from "./login.js";
-import Users from "./user.js"
-import Courses from "./course.js"
-import Assignment from "./assignment.js"
+import Users from "./user.js";
+import Courses from "./course.js";
+import Assignment from "./assignment.js";
+var DB_TESTING_FLAG = false; // remove for production
 
 /**
  * OBJECT CLASSES
@@ -16,12 +17,12 @@ import Assignment from "./assignment.js"
 var login_manager = new Login();
 var user_manager  = new Users( db );
 var course_manager = new Courses( db );
-var assignment_manager = new Assignment( db )
+var assignment_manager = new Assignment( db );
 
 const makeResolver = (resolver, options) => {
   return async (root, args, context, info) => {
     const o = {
-      requireUser: true,
+      requireUser: !DB_TESTING_FLAG,
       roles: ["Admin", "Student", "Professor"],
       ...options
     }
@@ -66,10 +67,10 @@ export default {
         return user_manager.getUsers();
       }),
       students: makeResolver((root, args, context, info) => {
-        return user_manager.getByRole( "Student" );
+        return user_manager.getStudents();
       }),
       faculty: makeResolver((root, args, context, info) => {
-        return user_manager.getByRole( "Professor" );
+        return user_manager.getFaculty();
       }),
       courses: makeResolver((root, args, context, info) => {
         return course_manager.getCourses();
@@ -113,20 +114,19 @@ export default {
       ),
       updateCourse: makeResolver(
         (root, { courseID, name, professorID }, context, info) => {
-          console.log("attempting to update a course!");
           return course_manager.updateCourse( courseID, name, professorID );
         },
         {roles: ["Admin", "Professor"]}
       ),
       addStudentToCourse: makeResolver(
-        (root, { courseID, userID }, context, info) => {
-          return course_manager.addStudentToCourse( courseID, userID );
+        (root, { userID, courseID }, context, info) => {
+          return course_manager.addStudentToCourse( userID, courseID );
         },
         {roles: ["Admin", "Professor"]}
       ),
       removeStudentFromCourse: makeResolver(
-        (root, { courseID, userID }, context, info) => {
-          return course_manager.removeStudentFromCourse( courseID, userID );
+        (root, { userID, courseID }, context, info) => {
+          return course_manager.removeStudentFromCourse( userID, courseID );
         },
         {roles: ["Admin", "Professor"]}
       ),

@@ -31,8 +31,8 @@ const typeDefs = gql`
     createCourse(name: String!, professorID: ID!): Course
     deleteCourse(courseID: ID!): Course
     updateCourse(courseID: ID!, name: String!, professorID: ID!): Course
-    addStudentToCourse(courseID: ID!, studentID: ID!): Course
-    removeStudentFromCourse(courseID: ID!, studentID: ID!): Course
+    addStudentToCourse( userID: ID!, courseID: ID!): Course
+    removeStudentFromCourse(userID: ID!, courseID: ID!): Course
 
     createAssignment(courseID: ID!, name: String!): Assignment
     createAssignmentGrade(
@@ -90,7 +90,7 @@ const typeDefs = gql`
     email: String!
     role: Role!
     passwordHash: String!
-    courses: [Course]
+    teaching: [Course]
   }
 
   type Admin implements User {

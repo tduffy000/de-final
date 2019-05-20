@@ -1,19 +1,34 @@
+import Users from "./user.js";
+import regeneratorRuntime from "regenerator-runtime";
 
 export default class Courses {
 
   constructor( db ) {
     this.DB = db;
+    this.user_manager  = new Users( db );
   };
 
-  // TODO
-  getCourseById( id ) {
-    return null;
+  async get( id ) {
+    var c = await this.DB.Course.findByPk(id);
+    return c;
   };
 
-  getCourses() {
-    return this.DB.Course.findAll().then((r) => {
-      return JSON.parse(JSON.stringify(r))
-    })
+  async getCourses() {
+    var result = await this.DB.Course.findAll({
+      include: [
+        {
+          model: this.DB.Assignment,
+          as: "assignments"
+        },{
+          model: this.DB.User,
+          as: "professor"
+        },{
+          model: this.DB.User,
+          as: "students"
+        }
+      ]
+    });
+    return result;
   };
 
   createCourse( name, professorID ) {
@@ -29,7 +44,6 @@ export default class Courses {
     })
   };
 
-  // TODO: do we need this?
   updateCourse( courseID, name, professorID ) {
     return this.DB.Course.update({
       professorID: professorID,
@@ -38,21 +52,37 @@ export default class Courses {
     })
   };
 
-  // TODO: check this
-  addStudentToCourse( courseID, userID ) {
-    return this.DB.studentCourse.findOrCreate({
-      where: {
-        courseID: courseID,
-        userID: userID
-      }
-    })
+  async addStudentToCourse( userID, courseID ) {
+    var userRole = await this.user_manager.getUserRole( userID );
+    if (userRole !== "Student") {
+      throw new TypeError('Only Students can be enrolled in Courses');
+    }
+    // is student already enrolled?
+    var q = null;
+    q = await this.DB.StudentCourse.findOne({
+      where: {userID: userID,
+              courseID: courseID}
+    });
+    // if not then enroll them
+    if (!q) {
+      await this.DB.StudentCourse.create({
+        userID: userID,
+        courseID: courseID
+      });
+    }
+    var c = await this.DB.Course.findByPk(courseID);
+    return c;
   };
 
-  removeStudentFromCourse( courseID, userID ) {
-    return this.DB.studentCourse.destroy({
+  async removeStudentFromCourse( userID, courseID ) {
+    var userRole = await this.user_manager.getUserRole( userID );
+    if (userRole !== "Student") {
+      throw new TypeError('Only Students can be enrolled in Courses');
+    }
+    return this.DB.StudentCourse.destroy({
       where: {
-        courseID: courseID,
-        userID: userID
+        userID: userID,
+        courseID: courseID
       }
     })
   };

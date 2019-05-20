@@ -5,12 +5,10 @@ module.exports = (sequelize, DataTypes) => {
     courseID: DataTypes.INTEGER
   }, {});
   Assignment.associate = function(models) {
-    Assignment.belongsTo(models.Course, {
-      foreignKey: "assignmentID"
-    });
     Assignment.belongsToMany(models.User, {
       through: models.StudentAssignment,
-      foreignKey: "assignmentID"
+      foreignKey: "assignmentID",
+      as: "assignments"
     });
   };
   return Assignment;

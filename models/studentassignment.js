@@ -3,7 +3,7 @@
 module.exports = (sequelize, DataTypes) => {
   const StudentAssignment = sequelize.define('StudentAssignment', {
     assignmentID: DataTypes.INTEGER,
-    studentID: DataTypes.INTEGER,
+    userID: DataTypes.INTEGER,
     courseID: DataTypes.INTEGER,
     grade: DataTypes.STRING
   }, {});

@@ -7,11 +7,17 @@ module.exports = (sequelize, DataTypes) => {
   Course.associate = function(models) {
     Course.belongsToMany(models.User, {
       through: models.StudentCourse,
-      foreignKey: "courseID"
+      foreignKey: "courseID",
+      as: "students"
     });
-    Course.hasMany(models.Assignment, {
-      foreignKey: "courseID"
+    Course.belongsTo(models.User, {
+      foreignKey: "professorID",
+      as: "professor"
     })
+    Course.hasMany(models.Assignment, {
+      foreignKey: "courseID",
+      as: "assignments"
+    });
   };
   return Course;
 };
