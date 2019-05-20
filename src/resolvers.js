@@ -2,6 +2,8 @@ import { ApolloServer,
         gql,
         ForbiddenError,
         AuthenticationError } from "apollo-server";
+import regeneratorRuntime from "regenerator-runtime";
+
 import db from "../models";
 import Login from "./login.js";
 import Users from "./user.js"
