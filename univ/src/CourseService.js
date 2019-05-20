@@ -8,8 +8,8 @@ class CourseService {
         return this.currInstance;
     }
 
-    addCourse = (name, id) => {
-      console.log("name",name,"id",id);
+    addCourse = (id, name) => {
+      console.log("Name",name,"ProfessorId",id);
       return "Success";
         // return APPLLO_CLIENT.mutate({
         //     mutation: query.CREATE_COURSE,
@@ -20,8 +20,8 @@ class CourseService {
         // );
     };
 
-    addStudentToCourse = (id) => {
-      console.log("id",id);
+    deleteCourse = (id) => {
+      console.log("CourseId",id);
       return "Success";
         // return APPLLO_CLIENT.mutate({
         //     mutation: query.CREATE_COURSE,
@@ -31,6 +31,68 @@ class CourseService {
         //     }}
         // );
     };
+
+    updateCourse = (courseid,name,profid) => {
+      console.log("CourseId",courseid,"Name:",name,"ProfessorId:",profid);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+    addStudentToCourse = (cid,sid) => {
+      console.log("CourseId",cid,"StudentId",sid);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+    removeStudentFromCourse = (cid,sid) => {
+      console.log("CourseId",cid,"StudentId",sid);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+    createAssignment = (id, name) => {
+      console.log("CourseId",id,"Assignment",name);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+    createAssignmentGrade = (aid,sid,grade) => {
+      console.log("AssignmentId",aid,"StudentId",sid,"Grade",grade);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+
 }
 
 const myCourseService = CourseService.getInstance();

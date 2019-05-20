@@ -2,44 +2,44 @@ import React, { Component } from "react";
 
 import  myCourseService from "./CourseService";
 
-class CreateCourse extends Component {
+class AddStudentToCourse extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-        id: "",
-        name: "",
+        cid: "",
+        sid: ""
     };
     this.cService = myCourseService;
   }
   onFormSubmit = event => {
     event.preventDefault();
-    this.cService.addCourse(event.target.id.value,event.target.name.value);
+    this.cService.addStudentToCourse(event.target.cid.value,event.target.sid.value);
     event.target.reset();
   };
 
   render() {
     return (
       <div>
-        <h2>Create Course Form</h2>
+        <h2>Add Student to Course Form</h2>
         <br/>
         <form onSubmit={this.onFormSubmit.bind(this)}>
           <label>
-            Professor Id:
-            <input type="text" name="id"
-            value={this.state.id.value}/><br/>
+            Course Id:
+            <input type="text" name="cid"
+            value={this.state.cid.value}/><br/>
           </label>
           <br/>
           <label>
-            Course Name:
-            <input type="text" name="name"
-            value={this.state.name.value}/><br/>
+            Student Id:
+            <input type="text" name="sid"
+            value={this.state.sid.value}/><br/>
           </label>
           <br/>
-          <input type="submit" value="Create" />
+          <input type="submit" value="AddStudentToCourse" />
         </form>
       </div>
     );
   }
 }
-export default CreateCourse;
+export default AddStudentToCourse;

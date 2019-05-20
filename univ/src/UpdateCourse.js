@@ -2,30 +2,31 @@ import React, { Component } from "react";
 
 import  myCourseService from "./CourseService";
 
-class CreateCourse extends Component {
+class UpdateCourse extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
         id: "",
         name: "",
+        profid:""
     };
     this.cService = myCourseService;
   }
   onFormSubmit = event => {
     event.preventDefault();
-    this.cService.addCourse(event.target.id.value,event.target.name.value);
+    this.cService.updateCourse(event.target.id.value,event.target.name.value, event.target.profid.value);
     event.target.reset();
   };
 
   render() {
     return (
       <div>
-        <h2>Create Course Form</h2>
+        <h2>Update Course Form</h2>
         <br/>
         <form onSubmit={this.onFormSubmit.bind(this)}>
           <label>
-            Professor Id:
+            Course Id:
             <input type="text" name="id"
             value={this.state.id.value}/><br/>
           </label>
@@ -36,10 +37,16 @@ class CreateCourse extends Component {
             value={this.state.name.value}/><br/>
           </label>
           <br/>
-          <input type="submit" value="Create" />
+          <label>
+            Professor Id:
+            <input type="text" name="profid"
+            value={this.state.profid.value}/><br/>
+          </label>
+          <br/>
+          <input type="submit" value="Update" />
         </form>
       </div>
     );
   }
 }
-export default CreateCourse;
+export default UpdateCourse;

@@ -8,8 +8,8 @@ class UserService {
         return this.currInstance;
     }
 
-    addUser = (fname, lname,email,role) => {
-      console.log("fname",fname,"lname",lname,"email",email,"role",role);
+    loginUser = (email,password) => {
+      console.log("email:",email,"password:",password);
       return "Success";
         // return APPLLO_CLIENT.mutate({
         //     mutation: query.CREATE_COURSE,
@@ -20,8 +20,21 @@ class UserService {
         // );
     };
 
-    deleteUser = (email) => {
-      console.log("email",email);
+
+    addUser = (fname,email,password,role) => {
+      console.log("fname:",fname,"email:",email,"password:",password,"role:",role);
+      return "Success";
+        // return APPLLO_CLIENT.mutate({
+        //     mutation: query.CREATE_COURSE,
+        //     variables: {
+        //         name:name,
+        //         facultyID:facultyId,
+        //     }}
+        // );
+    };
+
+    updateUser = (id,fname,email,password,role) => {
+      console.log("id:",id,"fname:",fname,"email:",email,"password:",password,"role:",role);
       return "Success";
         // return APPLLO_CLIENT.mutate({
         //     mutation: query.CREATE_COURSE,

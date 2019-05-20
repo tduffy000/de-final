@@ -11,12 +11,16 @@ import Faculty from "./Faculty";
 import Admin from "./Admin";
 import DataScience, {MachineLearning, BigData} from "./CourseDesc";
 import CreateUser from "./CreateUser";
-import DeleteUser from "./DeleteUser";
+import UpdateUser from "./UpdateUser";
 import CreateList from "./CreateList";
 import CourseList from "./CourseList";
 import CreateCourse from "./CreateCourse";
-
-
+import DeleteCourse from "./DeleteCourse";
+import UpdateCourse from "./UpdateCourse";
+import AddStudentToCourse from "./AddStudentToCourse";
+import RemoveStudentFromCourse from "./RemoveStudentFromCourse";
+import CreateAssignment from "./CreateAssignment";
+import CreateAssignmentGrade from "./CreateAssignmentGrade";
  
 class Main extends Component {
   render() {
@@ -42,14 +46,25 @@ class Main extends Component {
 
             <Route path="/Faculty/CourseList" component={CourseList}/>
             <Route path="/Faculty/CreateCourse" component={CreateCourse}/>
+            <Route path="/Faculty/DeleteCourse" component={DeleteCourse}/>
+            <Route path="/Faculty/UpdateCourse" component={UpdateCourse}/>
+            <Route path="/Faculty/AddStudentToCourse" component={AddStudentToCourse}/>
+            <Route path="/Faculty/RemoveStudentFromCourse" component={RemoveStudentFromCourse}/>
+            <Route path="/Faculty/CreateAssignment" component={CreateAssignment}/>
+            <Route path="/Faculty/CreateAssignmentGrade" component={CreateAssignmentGrade}/>
             <Route path="/Faculty/CourseList/DataScience" component={DataScience}/>
             <Route path="/Faculty/CourseList/MachineLearning" component={MachineLearning}/>
             <Route path="/Faculty/CourseList/BigData" component={BigData}/>
 
             <Route path="/Admin/CreateUser" component={CreateUser}/>
-            <Route path="/Admin/DeleteUser" component={DeleteUser}/>
+            <Route path="/Admin/UpdateUser" component={UpdateUser}/>
             <Route path="/Admin/CreateList" component={CreateList}/>
           </div>
+          <br/>
+          <br/>
+          <form>
+            <input type="submit" value="LogOut"/>
+          </form>
         </div>
       </HashRouter>
     );

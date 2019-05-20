@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import  myCourseService from "./CourseService";
 
-class CreateCourse extends Component {
+class CreateAssignment extends Component {
 
   constructor(props) {
     super(props);
@@ -14,24 +14,24 @@ class CreateCourse extends Component {
   }
   onFormSubmit = event => {
     event.preventDefault();
-    this.cService.addCourse(event.target.id.value,event.target.name.value);
+    this.cService.createAssignment(event.target.id.value,event.target.name.value);
     event.target.reset();
   };
 
   render() {
     return (
       <div>
-        <h2>Create Course Form</h2>
+        <h2>Create Assignment Form</h2>
         <br/>
         <form onSubmit={this.onFormSubmit.bind(this)}>
           <label>
-            Professor Id:
+            Course Id:
             <input type="text" name="id"
             value={this.state.id.value}/><br/>
           </label>
           <br/>
           <label>
-            Course Name:
+            Assignment Name:
             <input type="text" name="name"
             value={this.state.name.value}/><br/>
           </label>
@@ -42,4 +42,4 @@ class CreateCourse extends Component {
     );
   }
 }
-export default CreateCourse;
+export default CreateAssignment;
