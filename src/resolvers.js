@@ -12,15 +12,14 @@ import Assignment from "./assignment.js"
  * OBJECT CLASSES
  */
 var login_manager = new Login();
-var user_manager  = new Users(db);
-var course_manager = new Courses(db);
-var assingment_manager = new Assignment(db)
-// TODO: add wrapper classes for User, Course, Assignment
+var user_manager  = new Users( db );
+var course_manager = new Courses( db );
+var assignment_manager = new Assignment( db )
 
 const makeResolver = (resolver, options) => {
   return async (root, args, context, info) => {
     const o = {
-      requireUser: false,
+      requireUser: true,
       roles: ["Admin", "Student", "Professor"],
       ...options
     }
@@ -33,17 +32,11 @@ const makeResolver = (resolver, options) => {
       const token = context.req.headers.authorization || "";
       if (!token) throw new AuthenticationError("Token required!");
 
-      [user, sessionID] = await login_manager.getUserFromToken(token)
-                                             .then((r) => {
-                                               return r;
-                                             }).catch((e) => {
-                                               console.error(e);
-                                             });
+      [user, sessionID] = await login_manager.getUserFromToken(token);
 
       if (!user || !sessionID) throw new AuthenticationError("Invalid Token/User");
       const userRole = user.role;
 
-      //  THIS STUB REMOVED FOR TEST SUITE : for role: " + userRole
       if (roles.indexOf(userRole) === -1) {
         throw new ForbiddenError("Operation Not Permitted");
       }
@@ -61,26 +54,23 @@ const makeResolver = (resolver, options) => {
 /**
   * GRAPHQL RESOLVERS
   */
-// TODO: loginUser needs to update user in context
-// TODO: confirm resolver permissions
 export default {
     User: {
       __resolveType: (user, context, info) => user.role
     },
     Query: {
-      currentUser: makeResolver( (root, args, context, info) => context.user),
+      currentUser: makeResolver((root, args, context, info) => context.user),
       users: makeResolver((root, args, context, info) => {
         return user_manager.getUsers();
       }),
       students: makeResolver((root, args, context, info) => {
-        return user_manager.getRole("Student");
+        return user_manager.getByRole( "Student" );
       }),
       faculty: makeResolver((root, args, context, info) => {
-        return user_manager.getRole("Professor")
-
+        return user_manager.getByRole( "Professor" );
       }),
       courses: makeResolver((root, args, context, info) => {
-        return course_manager.getCourses()
+        return course_manager.getCourses();
       })
     },
     Mutation: {
@@ -96,62 +86,60 @@ export default {
         }
       ),
       createUser: makeResolver(
-        (root, { name, email, role }, context, info) => {
-          return user_manager.createUser(name, email, role),
-          {roles: ["Admin"]}
-        }
+        (root, { user }, context, info) => {
+          return user_manager.createUser( user );
+        },
+        {roles: ["Admin"]}
       ),
       updateUser: makeResolver(
         (root, { id, name, email, role }, context, info) => {
-          return user_manager.updateUser(name, email, role, id)
+          return user_manager.updateUser( id, name, email, role );
         },
-          {roles: ["Admin"]}
+        {roles: ["Admin"]}
       ),
       createCourse: makeResolver(
         (root, { name, professorID }, context, info) => {
-          return course_manager.createCourse(name, professorID)
+          return course_manager.createCourse( name, professorID );
         },
-          {roles: ["Admin", "Professor"]};
+        {roles: ["Admin"]}
       ),
       deleteCourse: makeResolver(
         (root, { id }, context) => {
-          return course_manager.db.Course.destroy({
-            where: {id: id}
-          })
+          return course_manager.deleteCourse( id );
+        },
+        {roles: ["Admin"]}
+      ),
+      updateCourse: makeResolver(
+        (root, { courseID, name, professorID }, context, info) => {
+          console.log("attempting to update a course!");
+          return course_manager.updateCourse( courseID, name, professorID );
         },
         {roles: ["Admin", "Professor"]}
       ),
       addStudentToCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
-          return course_manager.addStudentToCourse(courseID, userID)
+          return course_manager.addStudentToCourse( courseID, userID );
         },
         {roles: ["Admin", "Professor"]}
       ),
       removeStudentFromCourse: makeResolver(
         (root, { courseID, userID }, context, info) => {
-          return course_manager.removeStudentFromCourse(courseID, userID)
+          return course_manager.removeStudentFromCourse( courseID, userID );
         },
         {roles: ["Admin", "Professor"]}
       ),
       createAssignment: makeResolver(
         (root, { name, courseID }, context, info) => {
-          return assingment_manager.createAssingment(name, courseID)
-        },
-        {roles: ["Professor"]}
-      ),
-      removeAssignment: makeResolver(
-        (root, { name, courseID }, context, info) => {
-          return assingment_manager.removeAssingment(name, courseID)
+          return assignment_manager.createAssignment( name, courseID )
         },
         {roles: ["Professor"]}
       ),
       createAssignmentGrade: makeResolver(
         (root, { assignmentID, studentID, courseID, grade }, context, info) => {
-          return assingment_manager.createAssignmentGrade(assignmentID,
-            studentID, courseID, grade)
+          return assignment_manager.createAssignmentGrade( assignmentID,
+            studentID, courseID, grade );
         },
         {roles: ["Professor"]}
       )
-      // TODO: GPA can be calculated by a filter on Assignment grade table
     }
 };

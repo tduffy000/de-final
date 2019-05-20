@@ -1,49 +1,60 @@
-import { ForbiddenError,
-         AuthenticationError } from "apollo-server";
-
-
 
 export default class Courses {
-  constructor(db) {
-    this.course = db.Course,
-    this.studentCourse = db.StudentCourse
-  }
+
+  constructor( db ) {
+    this.DB = db;
+  };
+
+  // TODO
+  getCourseById( id ) {
+    return null;
+  };
 
   getCourses() {
-    return this.course.findAll().then((r) => {
+    return this.DB.Course.findAll().then((r) => {
       return JSON.parse(JSON.stringify(r))
     })
-  }
+  };
 
-  createCourse(name, professorID) {
-    return this.course.create({
+  createCourse( name, professorID ) {
+    return this.DB.Course.create({
       name: name,
       professorID: professorID
     })
-  }
+  };
 
-  deleteCourse(id) {
-    return this.course.destroy({
+  deleteCourse( id ) {
+    return this.DB.Course.destroy({
       where: {id: id}
     })
-  }
+  };
 
-  addStudentToCourse(courseID, userID) {
-    return this.studentCourse.findOrCreate({
+  // TODO: do we need this?
+  updateCourse( courseID, name, professorID ) {
+    return this.DB.Course.update({
+      professorID: professorID,
+      name: name,
+      where: {id: courseID}
+    })
+  };
+
+  // TODO: check this
+  addStudentToCourse( courseID, userID ) {
+    return this.DB.studentCourse.findOrCreate({
       where: {
         courseID: courseID,
         userID: userID
       }
     })
-  }
+  };
 
-  removeStudentFromCourse(courseID, userID) {
-    return this.studentCourse.destroy({
+  removeStudentFromCourse( courseID, userID ) {
+    return this.DB.studentCourse.destroy({
       where: {
         courseID: courseID,
         userID: userID
       }
     })
-  }
+  };
 
 }

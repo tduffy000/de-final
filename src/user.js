@@ -1,41 +1,49 @@
-import { ForbiddenError,
-         AuthenticationError } from "apollo-server";
-
-
+import Login from "./login.js";
 
 export default class Users {
-  constructor(db) {
-    this.user = db.User
-  }
+
+  constructor( db ) {
+    this.DB = db;
+  };
 
   getUsers() {
-    return this.user.findAll().then((r) => {
+    return this.DB.User.findAll().then((r) => {
       return JSON.parse(JSON.stringify(r))
     })
-  }
+  };
 
-  getRole(role) {
-    return this.user.findAll({
+  getByRole( role ) {
+    return this.DB.User.findAll({
       where: {role: role}
     })
-  }
+  };
 
-  createUser(name, email, role) {
-    return this.user.create({
-      name: name,
-      email: email,
-      role: role
-    });
-  }
+  createUser( user ) {
+    var login_manager = new Login();
+    var passwordData = login_manager.genSaltHashPassword( user.password );
 
-  updateUser(name, email, role) {
-    return this.user.update({
+    return this.DB.User.create({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      passwordHash: passwordData.passwordHash,
+      salt: passwordData.salt
+    })
+  };
+
+  updateUser( id, name, email, role ) {
+    return this.DB.User.update({
       name: name,
       email: email,
       role: role
     },{
       where: {id: id}
-    });
-  }
+    })
+  };
+
+  // TODO: should be a calculated field in table
+  getGPA( id ) {
+    return null;
+  };
 
 }

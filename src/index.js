@@ -30,6 +30,7 @@ const typeDefs = gql`
     # Only Faculty can create/update and manage courses
     createCourse(name: String!, professorID: ID!): Course
     deleteCourse(courseID: ID!): Course
+    updateCourse(courseID: ID!, name: String!, professorID: ID!): Course
     addStudentToCourse(courseID: ID!, studentID: ID!): Course
     removeStudentFromCourse(courseID: ID!, studentID: ID!): Course
 
@@ -142,4 +143,3 @@ const PORT = process.env.PORT || 4000;
 server.listen({ port: PORT }).then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
-  
