@@ -129,7 +129,7 @@ const typeDefs = gql`
  * SERVER
  */
 const server = new ApolloServer({
-  cors: false,
+  cors: true,
   typeDefs,
   resolvers,
   context: request => {
