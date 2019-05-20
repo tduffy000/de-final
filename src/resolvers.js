@@ -9,7 +9,7 @@ import Login from "./login.js";
 import Users from "./user.js";
 import Courses from "./course.js";
 import Assignment from "./assignment.js";
-var DB_TESTING_FLAG = false; // remove for production
+var DB_TESTING_FLAG = true; // remove for production
 
 /**
  * OBJECT CLASSES
