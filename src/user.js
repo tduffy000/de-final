@@ -44,7 +44,7 @@ export default class Users {
           as: "assignments"
         }
       ]
-    })
+    });
     return result;
   };
 
@@ -87,11 +87,6 @@ export default class Users {
 
     var u = await this.DB.User.findByPk(id);
     return u;
-  };
-
-  // TODO: should be a calculated field in table
-  getGPA( id ) {
-    return null;
   };
 
 }

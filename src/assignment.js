@@ -44,6 +44,9 @@ export default class Assignment {
         returning: true
       }
     );
+    if (r[0] === 0) {
+      throw new TypeError('Could find perform query: check id parameters');
+    };
     var a = await this.DB.Assignment.findByPk( assignmentID );
     var u = await this.DB.User.findByPk( studentID );
     return {
