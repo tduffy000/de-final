@@ -14,7 +14,7 @@ var DB_TESTING_FLAG = true; // remove for production
 /**
  * OBJECT CLASSES
  */
-var login_manager = new Login();
+var login_manager = new Login( db );
 var user_manager  = new Users( db );
 var course_manager = new Courses( db );
 var assignment_manager = new Assignment( db );

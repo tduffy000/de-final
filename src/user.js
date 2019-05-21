@@ -13,6 +13,15 @@ export default class Users {
     return u;
   };
 
+  async findUserByEmail(emailAddress) {
+    var u = await this.DB.User.findAll({
+      where: {
+        email: emailAddress
+      }
+    });
+    return u;
+  };
+
   async getUserRole( id ) {
     var u = await this.DB.User.findByPk(id);
     return u.role;

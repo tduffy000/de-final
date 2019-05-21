@@ -5,7 +5,6 @@ import { ApolloServer,
         AuthenticationError } from "apollo-server";
 import _ from "lodash";
 import resolvers from "./resolvers";
-import db from "../models";
 
 /**
   * SCHEMA

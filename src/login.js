@@ -1,14 +1,15 @@
 import { ForbiddenError,
          AuthenticationError } from "apollo-server";
-import db from "../models"; // TODO: should the db get passed into the constructor?
+import db from "../models";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import regeneratorRuntime from "regenerator-runtime";
 
 export default class Login {
 
-  // TODO: remove hard-coded testing variables
-  constructor() {
+  constructor( db ) {
+    this.DB = db;
+    this.user_manager = new Users( db );
     this.APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
   }
 
@@ -38,61 +39,42 @@ export default class Login {
     return passwordData;
   };
 
-  createUserSession(userID) {
-    // insert into usersession table
-    return db.UserSession.create({
+  async createUserSession(userID) {
+    var s = await this.DB.UserSession.findOrCreate({
       userID: userID
-    }).then( (r) => {
-      return JSON.parse(JSON.stringify(r))
     });
+    return s;
   };
 
-  // TODO: what to return if there's nothing to destroy?
   async destroyUserSession(userID) {
-    return db.UserSession.destroy({
+    var r = await this.DB.UserSession.destroy({
       where: {userID: userID}
-    }).then( (r) => {
-      return JSON.parse(JSON.stringify(r))
-    })
+    });
+    return r;
   }
 
   async getUserFromToken(token) {
     try {
       const {id, sessionID} = jwt.verify(token, this.APP_SECRET);
-      /*
-       * TODO: a better way to do this with a database is to
-       * join the Users table with the UserSessions table on
-       * users.id = user_sessions.user_id where session_id = sessionID
-       * this would get both the user and the sessionID in one query
-       */
-      var user = await db.User.findByPk(id).then((r) => {
-                                return JSON.parse(JSON.stringify(r));
-                               });
-      var session = await db.UserSession.findByPk(sessionID).then((r) => {
-                                          return JSON.parse(JSON.stringify(r))
-                                         });
+      var user = await this.user_manager.get(id);
+      var session = await this.DB.UserSession.findByPk(sessionID);
       if (!session) {
         throw new AuthenticationError('Invalid Session');
       }
       return [user, session.id];
     } catch(error) {
       if (error instanceof jwt.TokenExpiredError) {
-        // token expired => invalidate session
         const { sessionID } = jwt.decode(token);
-        this.destroyUserSession( sessionID ); // TODO: test
+        this.destroyUserSession( sessionID );
         throw new AuthenticationError('Session Expired')
       }
-      // bad/null token => disallow access
       throw new AuthenticationError('Bad Token');
     }
   }
 
   // TODO: add secret implementation
   async generateToken(user, secret = null, expiresIn = 60 * 10) {
-    // insert into usersession table
     const session = await this.createUserSession(user.id);
-
-    // sign token => return along with user
     const token = jwt.sign({ id: user.id, sessionID: session.id }, this.APP_SECRET, {
           expiresIn})
     return {
@@ -101,7 +83,6 @@ export default class Login {
     }
   }
 
-  // removes password-related fields before sending client-side
   omitSecrets(user) {
     var result = {};
     for (var x in user) {
@@ -112,36 +93,17 @@ export default class Login {
     return result;
   }
 
-  // TODO: use key (email) to find unique one; right now this returns an array
-  findUserByEmail(emailAddress) {
-    return db.User.findAll({
-      where: {
-        email: emailAddress
-      }
-    }).then( (u) => {
-      return JSON.parse(JSON.stringify(u))[0]
-    });
-  };
-
   async loginUser(emailAddress, password) {
-    // Get user from db by emailAddress
-    const user = await this.findUserByEmail(emailAddress);
+    const user = await this.user_manager.findUserByEmail(emailAddress);
     if(!user) {
       throw new AuthenticationError("Bad Login or Password");
     }
-
-    // hash the password with the user salt
-    // @see: https://en.wikipedia.org/wiki/Salt_(cryptography)
     const hashedPassword = this.sha512(password, user.salt).passwordHash;
-
-    // compare the hashed password against the one in the user record
     if (hashedPassword !== user.passwordHash) {
       throw new AuthenticationError("Bad Login or Password");
     }
 
-    // TODO: check if user already has a session (?)
-    // create userSession & token
-    let t = await this.generateToken(user);
+    var t = await this.generateToken(user);
     return {
       user: this.omitSecrets(t.user),
       token: t.token,
