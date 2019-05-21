@@ -5,7 +5,7 @@ export default class Users {
 
   constructor( db ) {
     this.DB = db;
-    this.login_manager = new Login();
+    this.login_manager = new Login( db );
   };
 
   async get( id ) {
