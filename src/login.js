@@ -1,7 +1,6 @@
 import { ForbiddenError,
          AuthenticationError } from "apollo-server";
 import db from "../models";
-import Users from "./user.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import regeneratorRuntime from "regenerator-runtime";
@@ -10,7 +9,6 @@ export default class Login {
 
   constructor( db ) {
     this.DB = db;
-    this.user_manager = new Users( db );
     this.APP_SECRET = "App Secret Key ; For example only! Don't define one in code!!!";
   }
 
@@ -40,6 +38,15 @@ export default class Login {
     return passwordData;
   };
 
+  async findUserByEmail(emailAddress) {
+    var u = await this.DB.User.findAll({
+      where: {
+        email: emailAddress
+      }
+    });
+    return u;
+  };
+
   async createUserSession(userID) {
     var s = await this.DB.UserSession.findOrCreate({
       userID: userID
@@ -57,7 +64,7 @@ export default class Login {
   async getUserFromToken(token) {
     try {
       const {id, sessionID} = jwt.verify(token, this.APP_SECRET);
-      var user = await this.user_manager.get(id);
+      var user = await this.DB.User.findByPk(id);
       var session = await this.DB.UserSession.findByPk(sessionID);
       if (!session) {
         throw new AuthenticationError('Invalid Session');
@@ -95,7 +102,7 @@ export default class Login {
   }
 
   async loginUser(emailAddress, password) {
-    const user = await this.user_manager.findUserByEmail(emailAddress);
+    const user = await this.findUserByEmail(emailAddress);
     if(!user) {
       throw new AuthenticationError("Bad Login or Password");
     }
