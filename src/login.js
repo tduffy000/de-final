@@ -1,6 +1,7 @@
 import { ForbiddenError,
          AuthenticationError } from "apollo-server";
 import db from "../models";
+import Users from "./user.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import regeneratorRuntime from "regenerator-runtime";
