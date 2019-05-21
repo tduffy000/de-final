@@ -107,8 +107,9 @@ export default {
         {roles: ["Admin"]}
       ),
       deleteCourse: makeResolver(
-        (root, { id }, context) => {
-          return course_manager.deleteCourse( id );
+        (root, { courseID }, context, info) => {
+          console.log("courseID = ", courseID);
+          return course_manager.deleteCourse( courseID );
         },
         {roles: ["Admin"]}
       ),
