@@ -36,3 +36,8 @@ ul.header li a {
 .active {
   background-color: #0099FF;
 }
+
+.content input[type=submit] {
+  border-radius: 12px;
+  size : 500px;
+}
