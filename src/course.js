@@ -38,18 +38,28 @@ export default class Courses {
     })
   };
 
-  deleteCourse( id ) {
-    return this.DB.Course.destroy({
+  async deleteCourse( id ) {
+    var c = await this.DB.Course.findByPk(id);
+    await this.DB.Course.destroy({
       where: {id: id}
-    })
+    });
+    return c;
   };
 
-  updateCourse( courseID, name, professorID ) {
-    return this.DB.Course.update({
-      professorID: professorID,
-      name: name,
-      where: {id: courseID}
-    })
+  async updateCourse( courseID, name, professorID ) {
+    await this.DB.Course.update(
+      {
+        professorID: professorID,
+        name: name
+      },{
+        where: {
+          id: courseID
+        }
+      }
+    );
+
+    var c = await this.DB.Course.findByPk(courseID);
+    return c;
   };
 
   async addStudentToCourse( userID, courseID ) {
