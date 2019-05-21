@@ -70,7 +70,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     role: Role!
-    passwordHash: String!
   }
 
   type Student implements User {
@@ -78,7 +77,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     role: Role!
-    passwordHash: String!
     courses: [Course]
     assignments: [Assignment]
     gpa: Float!
@@ -89,7 +87,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     role: Role!
-    passwordHash: String!
     teaching: [Course]
   }
 
@@ -98,7 +95,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     role: Role!
-    passwordHash: String!
   }
 
   type Course {

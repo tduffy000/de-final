@@ -44,13 +44,16 @@ export default class Login {
         email: emailAddress
       }
     });
-    return u;
+    return u[0];
   };
 
   async createUserSession(userID) {
-    var s = await this.DB.UserSession.findOrCreate({
+    var s = await this.DB.UserSession.create({
       userID: userID
     });
+    // var s = await this.DB.UserSession.findOrCreate({
+    //   where: {userID: userID}
+    // });
     return s;
   };
 
@@ -80,7 +83,6 @@ export default class Login {
     }
   }
 
-  // TODO: add secret implementation
   async generateToken(user, secret = null, expiresIn = 60 * 10) {
     const session = await this.createUserSession(user.id);
     const token = jwt.sign({ id: user.id, sessionID: session.id }, this.APP_SECRET, {
@@ -93,7 +95,7 @@ export default class Login {
 
   omitSecrets(user) {
     var result = {};
-    for (var x in user) {
+    for (var x in user.dataValues) {
       if ( x !== "passwordHash" && x !== "salt" ) {
         result[x] = user[x];
       }
