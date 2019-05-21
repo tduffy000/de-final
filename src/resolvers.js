@@ -95,8 +95,8 @@ export default {
         {roles: ["Admin"]}
       ),
       updateUser: makeResolver(
-        (root, { id, name, email, role }, context, info) => {
-          return user_manager.updateUser( id, name, email, role );
+        (root, { id, user }, context, info) => {
+          return user_manager.updateUser( id, user );
         },
         {roles: ["Admin"]}
       ),

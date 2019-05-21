@@ -72,14 +72,21 @@ export default class Users {
     })
   };
 
-  updateUser( id, name, email, role ) {
-    return this.DB.User.update({
-      name: name,
-      email: email,
-      role: role
-    },{
-      where: {id: id}
-    })
+  async updateUser( id, user ) {
+    await this.DB.User.update(
+      {
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },{
+        where: {
+          id: id
+        }
+      }
+    );
+
+    var u = await this.DB.User.findByPk(id);
+    return u;
   };
 
   // TODO: should be a calculated field in table
