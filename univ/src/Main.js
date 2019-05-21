@@ -21,7 +21,7 @@ import AddStudentToCourse from "./AddStudentToCourse";
 import RemoveStudentFromCourse from "./RemoveStudentFromCourse";
 import CreateAssignment from "./CreateAssignment";
 import CreateAssignmentGrade from "./CreateAssignmentGrade";
- 
+
 class Main extends Component {
   render() {
     return (

@@ -8,6 +8,7 @@ class CreateAssignmentGrade extends Component {
     super(props);
     this.state = {
         aid: "",
+        cid: "",
         sid: "",
         grade: ""
     };
@@ -15,7 +16,7 @@ class CreateAssignmentGrade extends Component {
   }
   onFormSubmit = event => {
     event.preventDefault();
-    this.cService.createAssignmentGrade(event.target.aid.value,event.target.sid.value,event.target.grade.value);
+    this.cService.createAssignmentGrade(event.target.aid.value,event.target.cid.value,event.target.sid.value,event.target.grade.value);
     event.target.reset();
   };
 
@@ -29,6 +30,12 @@ class CreateAssignmentGrade extends Component {
             Assignment Id:
             <input type="text" name="aid"
             value={this.state.aid.value}/><br/>
+          </label>
+          <br/>
+          <label>
+            Course Id:
+            <input type="text" name="cid"
+            value={this.state.cid.value}/><br/>
           </label>
           <br/>
           <label>
