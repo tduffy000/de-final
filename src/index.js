@@ -38,7 +38,7 @@ const typeDefs = gql`
       assignmentID: ID!
       courseID: ID!
       studentID: ID!
-      grade: Float!
+      grade: String!
     ): AssignmentGrade
   }
 

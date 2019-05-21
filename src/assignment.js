@@ -31,16 +31,26 @@ export default class Assignment {
     return a;
   };
 
-  createAssignmentGrade( assignmentID, studentID, courseID, grade ) {
-    return this.DB.StudentAssignment.update({
-      grade: grade
-    },{
-      where: {
-        assignmentID: assignmentID,
-        userID: studentID,
-        courseID: courseID
+  async createAssignmentGrade( assignmentID, studentID, courseID, grade ) {
+    var r = await this.DB.StudentAssignment.update(
+      {
+        grade: grade
+      },{
+        where: {
+          assignmentID: assignmentID,
+          userID: studentID,
+          courseID: courseID
+        },
+        returning: true
       }
-    })
+    );
+    var a = await this.DB.Assignment.findByPk( assignmentID );
+    var u = await this.DB.User.findByPk( studentID );
+    return {
+      id: r[1][0].dataValues.id,
+      assignment: a,
+      student: u,
+      grade: grade};
   };
 
 }
