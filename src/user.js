@@ -32,22 +32,16 @@ export default class Users {
     return result;
   };
 
-  gradeToFloat( letterGrade ) {
-    var gradeAsFloat = GRADE_MAP[letterGrade[0]];
-    if( letterGrade.length > 1 ) {
-      if (letterGrade[1] === '+') {
-        return gradeAsFloat + 0.33
-      } else {
-        return gradeAsFloat - 0.33
-      }
-    } else {
-      return gradeAsFloat;
-    }
-  };
-
   assignmentReducer(acc, val) {
     const GRADE_MAP = {'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0};
     var gradeAsFloat = GRADE_MAP[val.grade[0]];
+    if ( val.grade.length > 1 ) {
+      if(val.grade[1] === '+') {
+        gradeAsFloat += 0.33;
+      } else {
+        gradeAsFloat -= 0.33;
+      }
+    }
     if ( val.courseID in acc ) {
       var t = acc[val.courseID];
       acc[val.courseID] = [ t[0] + gradeAsFloat, t[1] + 1 ]
