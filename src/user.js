@@ -80,15 +80,15 @@ export default class Users {
     return gpaMap
   };
 
-  async updateGPA( query ) {
-    const gpaMap = this.calculateGPA( query );
+  async updateGPA( queryResult ) {
+    const gpaMap = this.calculateGPA( queryResult );
     for (var i = 0; i < gpaMap.length; i++) {
       this.DB.User.update(
         {
           gpa: gpaMap[i]
         },{
           where: {
-            id: result[i].id
+            id: queryResult[i].id
           }
         }
       )
@@ -127,6 +127,7 @@ export default class Users {
         }
       ]
     });
+    console.log("result = ", result);
     return result;
   };
 

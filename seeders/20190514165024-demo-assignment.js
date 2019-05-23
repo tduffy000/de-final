@@ -18,8 +18,23 @@ module.exports = {
           updatedAt: now
         },
         {
-          name: "Sodering",
+          name: "Automata",
+          courseID: 1,
+          createdAt: now,
+          updatedAt: now
+        },{
+          name: "Hashing",
           courseID: 2,
+          createdAt: now,
+          updatedAt: now
+        },{
+          name: "Prime Numbers",
+          courseID: 2,
+          createdAt: now,
+          updatedAt: now
+        },{
+          name: "Final Project",
+          courseID: 3,
           createdAt: now,
           updatedAt: now
         }
