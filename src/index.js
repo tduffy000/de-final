@@ -79,7 +79,7 @@ const typeDefs = gql`
     role: Role!
     courses: [Course]
     assignments: [Assignment]
-    gpa: Float!
+    gpa: Float
   }
 
   type Professor implements User {

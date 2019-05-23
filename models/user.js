@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     salt:{
       type: DataTypes.STRING,
       allowNull: false
+    },
+    gpa:{
+      type: DataTypes.FLOAT
     }
   }, {});
   User.associate = function(models) {
@@ -41,8 +44,12 @@ module.exports = (sequelize, DataTypes) => {
       as: "assignments"
     });
     User.hasOne(models.UserSession, {
+      foreignKey: "userID",
+      as: "session"
+    });
+    User.hasMany(models.StudentAssignment, {
       foreignKey: "userID"
-    })
+    });
   };
   return User;
 };

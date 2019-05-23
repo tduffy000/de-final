@@ -62,6 +62,7 @@ export default class Courses {
     return c;
   };
 
+  // TODO: add assignments in course to student's load
   async addStudentToCourse( userID, courseID ) {
     var userRole = await this.user_manager.getUserRole( userID );
     if (userRole !== "Student") {
