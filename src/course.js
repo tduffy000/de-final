@@ -57,12 +57,10 @@ export default class Courses {
         }
       }
     );
-
     var c = await this.DB.Course.findByPk(courseID);
     return c;
   };
 
-  // TODO: add assignments in course to student's load
   async addStudentToCourse( userID, courseID ) {
     var userRole = await this.user_manager.getUserRole( userID );
     if (userRole !== "Student") {
@@ -81,7 +79,14 @@ export default class Courses {
         courseID: courseID
       });
     }
-    var c = await this.DB.Course.findByPk(courseID);
+    var c = await this.DB.Course.findByPk(courseID, {
+      include: [
+        {
+          model: this.DB.User,
+          as: "students"
+        }
+      ]
+    });
     return c;
   };
 

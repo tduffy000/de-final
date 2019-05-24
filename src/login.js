@@ -39,7 +39,6 @@ export default class Login {
     return passwordData;
   };
 
-  // TODO: move email to PK
   async findUserByEmail(emailAddress) {
     var u = await this.DB.User.findAll({
       where: {
@@ -66,7 +65,6 @@ export default class Login {
   async getUserFromToken(token) {
     try {
       const {id, sessionID} = jwt.verify(token, this.APP_SECRET);
-      // TODO: implement User JOIN UserSession
       var user = await this.DB.User.findByPk(id);
       var session = await this.DB.UserSession.findByPk(sessionID);
       if (!session) {
@@ -83,7 +81,6 @@ export default class Login {
     }
   }
 
-  // TODO: what is app secret?
   async generateToken(user, secret = null, expiresIn = 60 * 10) {
     const session = await this.createUserSession(user.id);
     const token = jwt.sign({ id: user.id, sessionID: session.id }, this.APP_SECRET, {
