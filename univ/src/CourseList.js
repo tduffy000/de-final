@@ -11,9 +11,9 @@ class CourseList extends Component {
     return (
       <div>
         <h2>Course List</h2><br/>
-        <li><NavLink to="/Faculty/CourseList/DataScience"> Data Science</NavLink> </li>
-        <li><NavLink to="/Faculty/CourseList/MachineLearning">Machine Learning</NavLink> </li>
-        <li><NavLink to="/Faculty/CourseList/BigData">Big Data</NavLink> </li>
+        <li><NavLink to="/Professor/CourseList/DataScience"> Data Science</NavLink> </li>
+        <li><NavLink to="/Professor/CourseList/MachineLearning">Machine Learning</NavLink> </li>
+        <li><NavLink to="/Professor/CourseList/BigData">Big Data</NavLink> </li>
       </div>
     );
   }

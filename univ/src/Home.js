@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import  myuserService from "./userService";
+import authService from "./AuthService";
 
 class Home extends Component {
   constructor(props) {
@@ -12,7 +13,8 @@ class Home extends Component {
     this.handleUserChange = this.handleUserChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.uService = myuserService;
+    //this.uService = myuserService;
+    this.auth = authService;
   }
 
   handleUserChange(event) {
@@ -24,11 +26,17 @@ class Home extends Component {
 
    handleSubmit(event) {
      event.preventDefault();
-     this.uService.loginUser(this.state.userid,this.state.password);
-     this.setState({userid: "",password:""});
-     event.target.reset();
-     /*alert('Your role is: ' + this.state.role);*/
+      //this.uService.loginUser(this.state.userid,this.state.password);
+      this.auth.login(this.state.userid,this.state.password)
+     .then(res =>{
+          console.log(this.auth.getLoginUser().user.__typename);
+          this.props.history.push('/'+this.auth.getLoginUser().user.__typename);
+      })
+      .catch(err =>{
+          alert(err);
+      });
    }
+   
   render() {
     return (
       <div>
