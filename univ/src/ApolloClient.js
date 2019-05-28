@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 
 
 export const ApoClient = new ApolloClient({
-  uri: "https://whispering-harbor-80622.herokuapp.com/",
+  uri: "https://evening-wave-83459.herokuapp.com/",
 });
 
 export default ApoClient;
