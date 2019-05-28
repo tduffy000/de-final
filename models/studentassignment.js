@@ -8,7 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     grade: DataTypes.STRING
   }, {});
   StudentAssignment.associate = function(models) {
-    // associations can be defined here
+    StudentAssignment.belongsTo(models.User, {
+      foreignKey: "userID"
+    });
   };
   return StudentAssignment;
 };

@@ -9,7 +9,7 @@ import Login from "./login.js";
 import Users from "./user.js";
 import Courses from "./course.js";
 import Assignment from "./assignment.js";
-var DB_TESTING_FLAG = true; // remove for production
+var DB_TESTING_FLAG = false; // remove for production
 
 /**
  * OBJECT CLASSES
@@ -95,8 +95,8 @@ export default {
         {roles: ["Admin"]}
       ),
       updateUser: makeResolver(
-        (root, { id, name, email, role }, context, info) => {
-          return user_manager.updateUser( id, name, email, role );
+        (root, { id, user }, context, info) => {
+          return user_manager.updateUser( id, user );
         },
         {roles: ["Admin"]}
       ),
@@ -107,8 +107,9 @@ export default {
         {roles: ["Admin"]}
       ),
       deleteCourse: makeResolver(
-        (root, { id }, context) => {
-          return course_manager.deleteCourse( id );
+        (root, { courseID }, context, info) => {
+          console.log("courseID = ", courseID);
+          return course_manager.deleteCourse( courseID );
         },
         {roles: ["Admin"]}
       ),
