@@ -45,11 +45,6 @@ class Student extends Component {
         <h3> Course List </h3>
         <AllCourses/>
         <br/>
-        <i>Sample courses to list course description </i>
-        <br/>
-        <li><NavLink to="/Student/DataScience"> Data Science</NavLink> </li>
-        <li><NavLink to="/Student/MachineLearning">Machine Learning</NavLink> </li>
-        <li><NavLink to="/Student/BigData">Big Data</NavLink> </li>
       </div>
     </ApolloProvider>
     );

@@ -9,11 +9,9 @@ import Home from "./Home";
 import Student from "./Student";
 import Faculty from "./Faculty";
 import Admin from "./Admin";
-import DataScience, {MachineLearning, BigData} from "./CourseDesc";
 import CreateUser from "./CreateUser";
 import UpdateUser from "./UpdateUser";
 import CreateList from "./CreateList";
-import CourseList from "./CourseList";
 import CreateCourse from "./CreateCourse";
 import DeleteCourse from "./DeleteCourse";
 import UpdateCourse from "./UpdateCourse";
@@ -40,11 +38,9 @@ class Main extends Component {
             <Route path="/Faculty" component={Faculty}/>
             <Route path="/Admin" component={Admin}/>
 
-            <Route path="/Student/DataScience" component={DataScience}/>
-            <Route path="/Student/MachineLearning" component={MachineLearning}/>
-            <Route path="/Student/BigData" component={BigData}/>
 
-            <Route path="/Faculty/CourseList" component={CourseList}/>
+
+
             <Route path="/Faculty/CreateCourse" component={CreateCourse}/>
             <Route path="/Faculty/DeleteCourse" component={DeleteCourse}/>
             <Route path="/Faculty/UpdateCourse" component={UpdateCourse}/>
@@ -52,9 +48,7 @@ class Main extends Component {
             <Route path="/Faculty/RemoveStudentFromCourse" component={RemoveStudentFromCourse}/>
             <Route path="/Faculty/CreateAssignment" component={CreateAssignment}/>
             <Route path="/Faculty/CreateAssignmentGrade" component={CreateAssignmentGrade}/>
-            <Route path="/Faculty/CourseList/DataScience" component={DataScience}/>
-            <Route path="/Faculty/CourseList/MachineLearning" component={MachineLearning}/>
-            <Route path="/Faculty/CourseList/BigData" component={BigData}/>
+
 
             <Route path="/Admin/CreateUser" component={CreateUser}/>
             <Route path="/Admin/UpdateUser" component={UpdateUser}/>

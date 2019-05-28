@@ -32,3 +32,22 @@ gql`
     status
   }
 }`,
+
+//import DataScience, {MachineLearning, BigData} from "./CourseDesc";
+import CourseList from "./CourseList";
+
+<Route path="/Faculty/CourseList" component={CourseList}/>
+
+// <Route path="/Student/DataScience" component={DataScience}/>
+// <Route path="/Student/MachineLearning" component={MachineLearning}/>
+// <Route path="/Student/BigData" component={BigData}/>
+
+// <Route path="/Faculty/CourseList/DataScience" component={DataScience}/>
+// <Route path="/Faculty/CourseList/MachineLearning" component={MachineLearning}/>
+// <Route path="/Faculty/CourseList/BigData" component={BigData}/>
+
+//         <i>Sample courses to list course description </i>
+//         <br/>
+//         <li><NavLink to="/Student/DataScience"> Data Science</NavLink> </li>
+//         <li><NavLink to="/Student/MachineLearning">Machine Learning</NavLink> </li>
+//         <li><NavLink to="/Student/BigData">Big Data</NavLink> </li>

@@ -100,13 +100,13 @@ class CourseService {
     createAssignmentGrade = (aid,cid,sid,grade) => {
       console.log("AssignmentId",aid,"CourseId",cid,"StudentId",sid,"Grade",grade);
       return ApoClient.mutate({
-          mutation: gql`mutation createAssignmentGrade($assignmentID: ID!, $courseID: ID!, $studentID: ID!, $grade: Float!){
+          mutation: gql`mutation createAssignmentGrade($assignmentID: ID!, $courseID: ID!, $studentID: ID!, $grade: String!){
                   createAssignmentGrade(assignmentID: $assignmentID, courseID: $courseID, studentID: $studentID, grade: $grade) {
                           id
                         }
                 }
       `,
-          variables: { assignmentID: aid, courseID: cid,  studentID: sid, grade: parseFloat(grade)} }
+          variables: { assignmentID: aid, courseID: cid,  studentID: sid, grade:grade} }
       );
     };
 }

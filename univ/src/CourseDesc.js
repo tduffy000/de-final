@@ -1,5 +1,5 @@
 import React, { Component } from "react";
- 
+
 class DataScience extends Component {
   render() {
     return (
